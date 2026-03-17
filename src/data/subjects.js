@@ -1,0 +1,60 @@
+const subjects = [
+  {
+    slug: 'english',
+    name: 'English',
+    colour: '#a3b832',
+    topics: [],
+  },
+  {
+    slug: 'maths',
+    name: 'Maths',
+    colour: '#c0253d',
+    topics: [
+      {slug: 'algebra', title: 'Algebra e.g.',
+        resources: { notes: true, quiz: true, flashcards: true }
+      }
+    ],
+  },
+  {
+    slug: 'biology',
+    name: 'Biology',
+    colour: '#2d9e7f',
+    topics: [],
+  },
+  {
+    slug: 'chemistry',
+    name: 'Chemistry',
+    colour: '#6c4fd4',
+    topics: [],
+  },
+  {
+    slug: 'physics',
+    name: 'Physics',
+    colour: '#d4522a',
+    topics: [
+      {slug: 'energy', title: 'Energy Start',
+        resources: { notes: true, quiz: false, flashcards: false}
+      }
+    ],
+  },
+  {
+    slug: 'geography',
+    name: 'Geography',
+    colour: '#c49a1a',
+    topics: [],
+  },
+  {
+    slug: 'computer-science',
+    name: 'Computer Science',
+    colour: '#d4748a',
+    topics: [],
+  },
+  {
+    slug: 'it',
+    name: 'IT',
+    colour: '#b8bec7',
+    topics: [],
+  },
+]
+
+export default subjects
