@@ -1,12 +1,13 @@
+// vite.config.js
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import path from 'path' // You might need to install this if it's missing
+import path from 'path'
 
 export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      // This tells Vite: "@" means the "src" folder
+      // This maps "@" to the "src" folder
       '@': path.resolve(__dirname, './src'),
     },
   },
