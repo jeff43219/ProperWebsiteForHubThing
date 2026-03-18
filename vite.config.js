@@ -1,11 +1,14 @@
 // vite.config.js
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import path from 'path'
 
 export default defineConfig({
   plugins: [react()],
-  // If your app is not at the domain root, add: base: '/your-repo-name/',
-  build: {
-    outDir: 'dist',
-  }
+  resolve: {
+    alias: {
+      // This maps "@" to the "src" folder
+      '@': path.resolve(__dirname, './src'),
+    },
+  },
 })
