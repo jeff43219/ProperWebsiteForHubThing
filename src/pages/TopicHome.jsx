@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom'
-import subjects from '../data/subjects'
-import ResourceCard from '../components/ResourceCard'
+import subjects from '@/data/subjects';
+import ResourceCard from '@/components/ResourceCard';
 
 export default function TopicHome() {
   const { subjectSlug, topicSlug } = useParams()

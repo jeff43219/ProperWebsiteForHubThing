@@ -1,5 +1,5 @@
-import subjects from '../data/subjects'
-import SubjectCard from '../components/SubjectCard'
+import subjects from '@/data/subjects';
+import SubjectCard from '@/components/SubjectCard';
 
 export default function Home() {
   return (

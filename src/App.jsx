@@ -1,10 +1,10 @@
 import { Routes, Route } from 'react-router-dom'
-import Navbar from './components/Navbar'
-import Home from './pages/Home'
-import SubjectHome from './pages/SubjectHome'
-import TopicHome from './pages/TopicHome'
-import NotFound from './pages/NotFound'
-import ResourcePage from './components/ResourcePage'
+import Navbar from '@/components/Navbar'
+import Home from '@/pages/Home'
+import SubjectHome from '@/pages/SubjectHome'
+import TopicHome from '@/pages/TopicHome'
+import NotFound from '@/pages/NotFound'
+import ResourcePage from '@/components/ResourcePage'
 
 const Layout = ({ children }) => (
   <>

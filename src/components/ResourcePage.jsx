@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
-import subjects from '../data/subjects'
+import subjects from '@/data/subjects'
 
 export default function ResourcePage() {
   const { subjectSlug, topicSlug, resource } = useParams()

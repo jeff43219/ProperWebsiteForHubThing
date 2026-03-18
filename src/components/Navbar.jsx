@@ -1,5 +1,5 @@
 import { Link, useParams, useNavigate } from 'react-router-dom'
-import subjects from '../data/subjects'
+import subjects from '@/data/subjects'
 
 export default function Navbar() {
   const { subjectSlug, topicSlug, resource } = useParams()
