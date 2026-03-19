@@ -1,4 +1,10 @@
 const subjects = [
+    {
+    slug: 'biology',
+    name: 'Biology',
+    colour: '#2d9e7f',
+    topics: [],
+  },
   {
     slug: 'english',
     name: 'English',
@@ -14,12 +20,6 @@ const subjects = [
         resources: { notes: false, quiz: false, flashcards: false }
       }
     ],
-  },
-  {
-    slug: 'biology',
-    name: 'Biology',
-    colour: '#2d9e7f',
-    topics: [],
   },
   {
     slug: 'chemistry',
