@@ -114,7 +114,22 @@ const css = `
   .notes-wrap .hero-title{font-size:clamp(1.8rem,4vw,2.8rem);font-weight:800;color:#fff;letter-spacing:-.04em;line-height:1.1;margin-bottom:12px}
   .notes-wrap .hero-sub{color:rgba(255,255,255,.5);font-size:.95rem;max-width:480px;line-height:1.7}
   .notes-wrap .hero-bar{height:3px;background:linear-gradient(90deg,var(--accent),#f5a623,#2E9E6B);margin:32px 0 48px;border-radius:2px}
+  .notes-wrap .notes-layout{display:flex;min-height:calc(100vh - 56px)}
+  .notes-wrap .notes-sidebar{flex-shrink:0;background:#111;border-right:1px solid #2a2a2a;position:sticky;top:56px;height:calc(100vh - 56px);overflow-y:auto;overflow-x:hidden;width:220px;transition:width .25s ease,opacity .25s ease,border-color .25s ease}
+  .notes-wrap .notes-sidebar.collapsed{width:0;opacity:0;border-right-color:transparent}
+  .notes-wrap .sidebar-inner{padding:20px 0;min-width:220px;width:220px}
+  .notes-wrap .sidebar-label{font-size:.6rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.28);padding:16px 16px 6px;display:block;white-space:nowrap}
+  .notes-wrap .sidebar-link{display:flex;align-items:center;gap:8px;padding:8px 16px;color:rgba(255,255,255,.55);text-decoration:none;font-size:.8rem;font-weight:500;border-left:3px solid transparent;transition:all .18s ease;cursor:pointer;background:none;border-top:none;border-right:none;border-bottom:none;width:100%;text-align:left;white-space:nowrap}
+  .notes-wrap .sidebar-link:hover{color:#fff;background:rgba(255,255,255,.05)}
+  .notes-wrap .sidebar-link.active{color:#fff;background:rgba(255,255,255,.06);border-left-color:var(--accent)}
+  .notes-wrap .sidebar-num{background:rgba(255,255,255,.1);color:rgba(255,255,255,.5);font-size:.62rem;font-weight:700;border-radius:4px;padding:1px 5px;font-family:monospace;flex-shrink:0}
+  .notes-wrap .sidebar-link.active .sidebar-num{background:rgba(212,82,42,.3);color:var(--accent)}
+  .notes-wrap .notes-main{flex:1;min-width:0;padding:48px 56px;transition:padding .25s ease}
+  .notes-wrap .sidebar-toggle{position:fixed;bottom:24px;left:24px;z-index:100;width:36px;height:36px;border-radius:50%;background:#1a1a1a;border:1px solid #2a2a2a;color:#f0f0f0;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s ease}
+  .notes-wrap .sidebar-toggle:hover{background:#252525}
   @media(max-width:768px){
+    .notes-wrap .notes-sidebar{position:fixed;top:56px;left:0;height:calc(100vh - 56px);z-index:90}
+    .notes-wrap .notes-main{padding:28px 20px}
     .notes-wrap .two-col{grid-template-columns:1fr}
     .notes-wrap .stores-grid{grid-template-columns:1fr 1fr}
     .notes-wrap .renew-grid{grid-template-columns:1fr}
@@ -139,6 +154,7 @@ const NAV = [
 
 export default function Notes() {
   const [activeId, setActiveId] = useState("stores");
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   useEffect(() => {
     const onScroll = () => {
@@ -167,7 +183,31 @@ export default function Notes() {
   return (
     <div className="notes-wrap" style={{ fontFamily: "'Inter', sans-serif", color: "#f0f0f0" }}>
       <style>{css}</style>
-      <div style={{ padding: "48px 56px", maxWidth: 900 }}>
+      <button className="sidebar-toggle" onClick={() => setSidebarOpen(o => !o)} aria-label="Toggle sidebar">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M3 4h10M3 8h10M3 12h10" stroke="#f0f0f0" strokeWidth="1.8" strokeLinecap="round"/>
+        </svg>
+      </button>
+      <div className="notes-layout">
+        <aside className={`notes-sidebar${sidebarOpen ? "" : " collapsed"}`}>
+          <div className="sidebar-inner">
+            <span className="sidebar-label">Topics</span>
+            {NAV.slice(0, 6).map(({ num, id, label }) => (
+              <button key={id} className={`sidebar-link${activeId === id ? " active" : ""}`}
+                onClick={() => document.getElementById(id)?.scrollIntoView({ behavior: "smooth" })}>
+                <span className="sidebar-num">{num}</span>{label}
+              </button>
+            ))}
+            <span className="sidebar-label">Reference</span>
+            {NAV.slice(6).map(({ num, id, label }) => (
+              <button key={id} className={`sidebar-link${activeId === id ? " active" : ""}`}
+                onClick={() => document.getElementById(id)?.scrollIntoView({ behavior: "smooth" })}>
+                <span className="sidebar-num">{num}</span>{label}
+              </button>
+            ))}
+          </div>
+        </aside>
+        <main className="notes-main">
 
         {/* Hero */}
         <div className="hero-tag">GCSE Physics</div>
@@ -620,6 +660,7 @@ export default function Notes() {
           </table>
         </section>
 
+      </main>
       </div>
     </div>
   );
