@@ -42,7 +42,11 @@ export default function ResourceCard({ slug, subjectSlug, topicSlug, available, 
         <p className="text-sm font-bold text-[#f0f0f0] mb-1">{label}</p>
         <p className="text-xs text-[#888] leading-relaxed">{description}</p>
       </div>
-      {!available && (
+      {available ? (
+        <span className="text-xs font-semibold mt-auto transition-colors duration-150" style={{ color: colour }}>
+          Start →
+        </span>
+      ) : (
         <span className="text-xs font-semibold text-[#555] mt-auto">Not available yet</span>
       )}
     </div>
