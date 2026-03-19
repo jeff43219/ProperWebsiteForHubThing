@@ -1,9 +1,20 @@
 import { Link } from 'react-router-dom'
 import subjects from '../data/subjects'
 
+const RESOURCES = ['notes', 'quiz', 'flashcards']
+const ICONS = { notes: '📄', quiz: '✏️', flashcards: '🃏' }
+
 export default function SubjectCard({ name, slug, colour }) {
   const subject = subjects.find(s => s.slug === slug)
-  const count = subject?.topics?.length ?? 0
+  const topics = subject?.topics ?? []
+  const count = topics.length
+
+  const progress = RESOURCES.reduce((acc, r) => {
+    acc[r] = topics.filter(t => t.resources?.[r]).length
+    return acc
+  }, {})
+
+  const hasAnyProgress = RESOURCES.some(r => progress[r] > 0)
 
   return (
     <Link
@@ -37,6 +48,18 @@ export default function SubjectCard({ name, slug, colour }) {
           {count} {count === 1 ? 'topic' : 'topics'}
         </span>
       </div>
+      {hasAnyProgress && count > 0 && (
+        <div className="relative flex gap-3 mt-auto pt-4">
+          {RESOURCES.map(r => (
+            <div key={r} className="flex items-center gap-1">
+              <span className="text-xs">{ICONS[r]}</span>
+              <span className="text-xs tabular-nums" style={{ color: progress[r] > 0 ? `${colour}cc` : '#444' }}>
+                {progress[r]}/{count}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
     </Link>
   )
 }

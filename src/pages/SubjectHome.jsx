@@ -1,6 +1,9 @@
 import { Link, useParams } from 'react-router-dom'
 import subjects from '../data/subjects'
 
+const RESOURCES = ['notes', 'quiz', 'flashcards']
+const ICONS = { notes: '📄', quiz: '✏️', flashcards: '🃏' }
+
 export default function SubjectHome() {
   const { subjectSlug } = useParams()
   const subject = subjects.find(s => s.slug === subjectSlug)
@@ -9,6 +12,14 @@ export default function SubjectHome() {
     <div className="flex items-center justify-center h-64 text-[#888]">Subject not found.</div>
   )
 
+  const topics = subject.topics
+  const count = topics.length
+
+  const progress = RESOURCES.reduce((acc, r) => {
+    acc[r] = topics.filter(t => t.resources?.[r]).length
+    return acc
+  }, {})
+
   return (
     <main className="px-8 py-12 max-w-5xl mx-auto">
       <div className="mb-10">
@@ -16,16 +27,28 @@ export default function SubjectHome() {
           GCSE {subject.name}
         </p>
         <h1 className="text-4xl font-extrabold tracking-tight text-[#f0f0f0]">{subject.name}</h1>
-        {subject.topics.length > 0 && (
-          <p className="text-base font-semibold text-[#888] mt-2">{subject.topics.length} {subject.topics.length === 1 ? 'topic' : 'topics'}</p>
+        {count > 0 && (
+          <p className="text-base font-semibold text-[#888] mt-2">{count} {count === 1 ? 'topic' : 'topics'}</p>
+        )}
+        {count > 0 && (
+          <div className="flex gap-4 mt-3">
+            {RESOURCES.map(r => (
+              <div key={r} className="flex items-center gap-1.5">
+                <span className="text-sm">{ICONS[r]}</span>
+                <span className="text-xs font-semibold tabular-nums" style={{ color: progress[r] > 0 ? subject.colour : '#444' }}>
+                  {progress[r]}/{count}
+                </span>
+              </div>
+            ))}
+          </div>
         )}
       </div>
 
-      {subject.topics.length === 0 ? (
+      {count === 0 ? (
         <div className="flex items-center justify-center h-48 text-[#888] text-sm">No topics yet.</div>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-          {subject.topics.map(({ slug, title }, i) => (
+          {topics.map(({ slug, title, resources: r }, i) => (
             <Link
               key={slug}
               to={`/${subjectSlug}/${slug}`}
@@ -46,6 +69,15 @@ export default function SubjectHome() {
               <span className="relative text-sm font-semibold text-[#f0f0f0] leading-snug mt-2">
                 {title}
               </span>
+              {r && (
+                <div className="relative flex gap-2 mt-3">
+                  {RESOURCES.map(res => (
+                    <span key={res} className="text-xs" style={{ opacity: r[res] ? 1 : 0.25 }}>
+                      {ICONS[res]}
+                    </span>
+                  ))}
+                </div>
+              )}
             </Link>
           ))}
         </div>
