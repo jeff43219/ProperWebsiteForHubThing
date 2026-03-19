@@ -54,37 +54,50 @@ export default function Navbar() {
 
       {subject && (
         <>
-          <span className="text-[#333] text-sm select-none">/</span>
+          <span className="text-[#333] text-sm select-none hidden sm:inline">/</span>
           <Link
             to={`/${subject.slug}`}
-            className="text-sm font-medium transition-all duration-150 rounded px-1 hover:px-2 hover:bg-white/5"
+            className="text-sm font-medium transition-all duration-150 rounded px-1 hover:px-2 hover:bg-white/5 hidden sm:inline"
             style={{ color: topic || resource ? '#888' : subject.colour }}
           >
             {subject.name}
           </Link>
+          {!topic && !resource && (
+            <span className="text-sm font-medium sm:hidden truncate max-w-[140px]" style={{ color: subject.colour }}>
+              {subject.name}
+            </span>
+          )}
         </>
       )}
 
       {topic && (
         <>
-          <span className="text-[#333] text-sm select-none">/</span>
+          <span className="text-[#333] text-sm select-none hidden sm:inline">/</span>
           <Link
             to={`/${subjectSlug}/${topic.slug}`}
-            className="text-sm font-medium transition-all duration-150 rounded px-1 hover:px-2 hover:bg-white/5"
+            className="text-sm font-medium transition-all duration-150 rounded px-1 hover:px-2 hover:bg-white/5 hidden sm:inline"
             style={{ color: resource ? '#888' : subject.colour }}
           >
             {topic.title}
           </Link>
+          {!resource && (
+            <span className="text-sm font-medium sm:hidden truncate max-w-[140px]" style={{ color: subject.colour }}>
+              {topic.title}
+            </span>
+          )}
         </>
       )}
 
       {resource && RESOURCE_LABELS[resource] && (
         <>
-          <span className="text-[#333] text-sm select-none">/</span>
+          <span className="text-[#333] text-sm select-none hidden sm:inline">/</span>
           <span
-            className="text-sm font-medium rounded px-1 transition-all duration-150 hover:px-2 hover:bg-white/5 cursor-default"
+            className="text-sm font-medium rounded px-1 transition-all duration-150 hover:px-2 hover:bg-white/5 cursor-default hidden sm:inline"
             style={{ color: subject.colour }}
           >
+            {RESOURCE_LABELS[resource]}
+          </span>
+          <span className="text-sm font-medium sm:hidden truncate max-w-[140px]" style={{ color: subject.colour }}>
             {RESOURCE_LABELS[resource]}
           </span>
         </>
