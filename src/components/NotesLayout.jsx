@@ -170,7 +170,13 @@ export default function NotesLayout({ tag, title, subtitle, accent = "#d4522a", 
     return () => obs.disconnect();
   }, []);
 
-  const scrollTo = (id) => {
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 80);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
     setMobileOpen(false);
   };
@@ -209,13 +215,37 @@ export default function NotesLayout({ tag, title, subtitle, accent = "#d4522a", 
 
         {/* Main content */}
         <main className="notes-main">
-          {/* Mobile hamburger — top-left of content, only visible on mobile */}
+          {/* Mobile hamburger — fixed, always visible, shrinks on scroll */}
           <button
             onClick={() => setMobileOpen(true)}
             className="mobile-hamburger"
-            style={{ display: "none", alignItems: "center", gap: 8, background: "none", border: "none", color: "#888", cursor: "pointer", padding: "0 0 24px 0", fontSize: ".8rem", fontWeight: 600 }}
+            style={{
+              display: "none",
+              position: "fixed",
+              top: scrolled ? 66 : 70,
+              left: scrolled ? 12 : 16,
+              zIndex: 150,
+              alignItems: "center",
+              gap: 6,
+              background: "#1a1a1a",
+              border: "1px solid #2a2a2a",
+              borderRadius: scrolled ? 8 : 10,
+              color: "#ccc",
+              cursor: "pointer",
+              padding: scrolled ? "6px 10px" : "9px 14px",
+              fontSize: scrolled ? ".72rem" : ".8rem",
+              fontWeight: 600,
+              transition: "all .2s ease",
+              boxShadow: "0 2px 12px rgba(0,0,0,0.4)",
+            }}
           >
-            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <svg
+              width={scrolled ? 14 : 18}
+              height={scrolled ? 14 : 18}
+              viewBox="0 0 18 18"
+              fill="none"
+              style={{ transition: "all .2s ease", flexShrink: 0 }}
+            >
               <path d="M2 4.5h14M2 9h14M2 13.5h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
             </svg>
             Topics
