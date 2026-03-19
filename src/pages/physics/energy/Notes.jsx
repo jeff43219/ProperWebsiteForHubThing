@@ -1,667 +1,476 @@
-import { useEffect, useState } from "react";
+import NotesLayout from '@/components/NotesLayout'
 
-const css = `
-  .notes-wrap{--surface:#1e1e1e;--surface2:#252525;--border:#2e2e2e;--text:#f0f0f0;--muted:#888;--accent:#d4522a;--accent-light:rgba(212,82,42,0.12);--green:#2E9E6B;--green-light:rgba(46,158,107,0.12);--green-dark:#1a6e3a;--red-light:rgba(212,82,42,0.1);--red-dark:#c0392b}
-  .notes-wrap *{box-sizing:border-box}
-  .notes-wrap .section{margin-bottom:64px}
-  .notes-wrap .section-header{display:flex;align-items:center;gap:14px;margin-bottom:22px;padding-bottom:14px;border-bottom:2px solid var(--border)}
-  .notes-wrap .section-num{background:#111;color:var(--accent);font-size:.75rem;font-weight:700;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:monospace}
-  .notes-wrap .section-header h2{font-size:1.3rem;font-weight:700;color:var(--text);letter-spacing:-.03em}
-  .notes-wrap .intro{background:var(--surface);border-left:4px solid var(--accent);border-radius:0 10px 10px 0;padding:14px 18px;font-size:.93rem;color:var(--text);margin-bottom:24px;line-height:1.7}
-  .notes-wrap h3{font-size:.85rem;font-weight:700;color:var(--text);margin:28px 0 12px;letter-spacing:-.01em;text-transform:uppercase;letter-spacing:.05em}
-  .notes-wrap .divider{height:1px;background:var(--border);margin:0 0 64px}
-  .notes-wrap .stores-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:8px}
-  .notes-wrap .store-card{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:18px 16px;transition:all .18s ease}
-  .notes-wrap .store-card:hover{border-color:rgba(212,82,42,.4);transform:translateY(-2px)}
-  .notes-wrap .store-icon{font-size:1.4rem;margin-bottom:8px}
-  .notes-wrap .store-name{font-size:.75rem;font-weight:700;color:var(--text);margin-bottom:6px}
-  .notes-wrap .store-desc{font-size:.82rem;color:var(--muted);line-height:1.55;margin-bottom:8px}
-  .notes-wrap .store-formula{font-family:monospace;font-size:.82rem;background:var(--accent-light);border:1px solid rgba(212,82,42,.25);border-radius:6px;padding:3px 10px;color:var(--accent);font-weight:600;display:inline-block}
-  .notes-wrap .two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:10px 0 20px}
-  .notes-wrap .two-col.tight{margin:8px 0}
-  .notes-wrap .info-card{background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:16px}
-  .notes-wrap .info-card.accent-border{border-color:rgba(212,82,42,.25)}
-  .notes-wrap .info-head{font-size:.78rem;font-weight:700;letter-spacing:.05em;color:var(--text);margin-bottom:10px;text-transform:uppercase}
-  .notes-wrap .info-card p{font-size:.88rem;color:var(--muted);line-height:1.6}
-  .notes-wrap .info-card p strong{color:var(--text)}
-  .notes-wrap .chain-list{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
-  .notes-wrap .chain{background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:14px 16px;display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap}
-  .notes-wrap .chain-label{font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);white-space:nowrap;padding-top:2px;min-width:110px}
-  .notes-wrap .chain-steps{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-  .notes-wrap .chain-step{font-size:.82rem;font-weight:600;background:var(--surface2);border:1.5px solid var(--border);border-radius:99px;padding:4px 12px;color:var(--text)}
-  .notes-wrap .chain-step.waste{background:var(--accent-light);border-color:rgba(212,82,42,.3);color:var(--accent)}
-  .notes-wrap .chain-arrow{color:var(--muted);font-size:.9rem;font-weight:700}
-  .notes-wrap .callout{background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:16px 20px;margin:20px 0}
-  .notes-wrap .callout.warn{border-color:rgba(212,82,42,.3);background:var(--accent-light)}
-  .notes-wrap .callout-title{font-size:.75rem;font-weight:700;color:var(--text);margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em}
-  .notes-wrap .callout p,.notes-wrap .callout{font-size:.88rem;line-height:1.65;color:var(--text)}
-  .notes-wrap .unit-grid{display:flex;flex-direction:column;gap:4px;margin-top:4px}
-  .notes-wrap .unit-row{display:flex;justify-content:space-between;font-size:.86rem;padding:5px 0;border-bottom:1px solid rgba(212,82,42,.15)}
-  .notes-wrap .unit-row:last-child{border-bottom:none}
-  .notes-wrap .unit-val{font-family:monospace;font-weight:700;color:var(--accent)}
-  .notes-wrap .calc-block{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:20px 22px;margin-bottom:20px}
-  .notes-wrap .calc-formula-big{font-family:monospace;font-size:clamp(1.1rem,2.5vw,1.5rem);font-weight:700;color:var(--accent);background:var(--accent-light);border:1.5px solid rgba(212,82,42,.25);border-radius:10px;padding:10px 18px;display:inline-block;margin-bottom:14px}
-  .notes-wrap .calc-legend{display:flex;flex-wrap:wrap;gap:8px 20px;margin-bottom:12px}
-  .notes-wrap .calc-legend span{font-size:.82rem;color:var(--muted)}
-  .notes-wrap .calc-legend strong{color:var(--text)}
-  .notes-wrap .calc-notes{font-size:.87rem;line-height:1.65;color:var(--text)}
-  .notes-wrap .calc-notes p{margin-bottom:8px}
-  .notes-wrap .calc-notes p:last-child{margin-bottom:0}
-  .notes-wrap .calc-notes strong{color:var(--accent)}
-  .notes-wrap .resource-block{margin-bottom:20px}
-  .notes-wrap .resource-head{font-size:.8rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:10px 16px;border-radius:10px 10px 0 0;margin-bottom:0}
-  .notes-wrap .resource-head.nonrenew{background:#111;color:rgba(255,255,255,.85)}
-  .notes-wrap .pro-card,.notes-wrap .con-card{background:var(--surface);border:1.5px solid var(--border);padding:0}
-  .notes-wrap .two-col.tight .pro-card{border-radius:0 0 0 10px}
-  .notes-wrap .two-col.tight .con-card{border-radius:0 0 10px 0}
-  .notes-wrap .pro-head,.notes-wrap .con-head{font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:8px 14px;border-bottom:1.5px solid var(--border)}
-  .notes-wrap .pro-head{background:var(--green-light);color:#2E9E6B}
-  .notes-wrap .con-head{background:var(--red-light);color:var(--red-dark)}
-  .notes-wrap .pro-card ul,.notes-wrap .con-card ul{list-style:none;padding:10px 14px}
-  .notes-wrap .pro-card li,.notes-wrap .con-card li{font-size:.85rem;padding:5px 0 5px 16px;position:relative;border-bottom:1px solid var(--border);line-height:1.5;color:var(--text)}
-  .notes-wrap .pro-card li:last-child,.notes-wrap .con-card li:last-child{border-bottom:none}
-  .notes-wrap .pro-card li::before,.notes-wrap .con-card li::before{content:'›';position:absolute;left:3px;color:var(--muted);font-weight:700}
-  .notes-wrap .renew-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-bottom:20px}
-  .notes-wrap .renew-card{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;overflow:hidden;transition:all .18s ease}
-  .notes-wrap .renew-card:hover{border-color:rgba(46,158,107,.35);transform:translateY(-2px)}
-  .notes-wrap .renew-head{font-size:.78rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:10px 14px;background:var(--green-light);color:#2E9E6B;border-bottom:1.5px solid rgba(46,158,107,.2)}
-  .notes-wrap .renew-how{font-size:.83rem;color:var(--text);padding:10px 14px 6px;line-height:1.5}
-  .notes-wrap .renew-pros{font-size:.8rem;color:#2E9E6B;padding:4px 14px;background:rgba(46,158,107,.06);border-top:1px solid rgba(46,158,107,.15);font-weight:500}
-  .notes-wrap .renew-cons{font-size:.8rem;color:var(--red-dark);padding:4px 14px 10px;font-weight:500}
-  .notes-wrap .reliability-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px}
-  .notes-wrap .rel-label{font-size:.7rem;color:var(--muted);font-weight:600;letter-spacing:.06em;text-transform:uppercase}
-  .notes-wrap .rel-items{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-  .notes-wrap .rel-item{font-size:.78rem;font-weight:600;padding:4px 12px;border-radius:99px;border:1.5px solid}
-  .notes-wrap .rel-item.high{background:var(--green-light);color:#2E9E6B;border-color:rgba(46,158,107,.3)}
-  .notes-wrap .rel-item.mid{background:var(--surface2);color:var(--text);border-color:var(--border)}
-  .notes-wrap .rel-item.low{background:var(--accent-light);color:var(--accent);border-color:rgba(212,82,42,.3)}
-  .notes-wrap .rel-arrow{color:var(--muted);font-weight:700}
-  .notes-wrap .waste-list{display:flex;flex-direction:column;gap:10px;margin-bottom:24px}
-  .notes-wrap .waste-item{display:flex;align-items:flex-start;gap:14px;background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:14px 16px;font-size:.88rem;line-height:1.6}
-  .notes-wrap .waste-icon{font-size:1.3rem;flex-shrink:0;margin-top:1px}
-  .notes-wrap .steps-list{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
-  .notes-wrap .step{display:flex;gap:14px;align-items:flex-start;background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:14px 16px;font-size:.88rem;line-height:1.6}
-  .notes-wrap .step-num{font-size:.75rem;font-weight:700;background:var(--accent);color:#fff;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
-  .notes-wrap .grid-explainer{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:20px;margin:16px 0 12px;justify-content:center}
-  .notes-wrap .grid-step{text-align:center;min-width:90px}
-  .notes-wrap .grid-icon{font-size:1.5rem;margin-bottom:4px}
-  .notes-wrap .grid-label{font-size:.72rem;font-weight:700;color:var(--text);line-height:1.3}
-  .notes-wrap .grid-sub{font-size:.66rem;color:var(--muted);margin-top:3px;line-height:1.35}
-  .notes-wrap .grid-arrow{font-size:1.2rem;color:var(--accent);font-weight:700;flex-shrink:0}
-  .notes-wrap .grid-note{font-size:.85rem;color:var(--muted);line-height:1.6;margin-top:4px}
-  .notes-wrap .grid-note strong{color:var(--text)}
-  .notes-wrap .formula-table{width:100%;border-collapse:collapse;font-size:.88rem}
-  .notes-wrap .formula-table thead tr{background:#111}
-  .notes-wrap .formula-table th{padding:10px 16px;text-align:left;font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.7)}
-  .notes-wrap .formula-table tbody tr{background:var(--surface);border-bottom:1px solid var(--border)}
-  .notes-wrap .formula-table tbody tr:hover{background:var(--accent-light)}
-  .notes-wrap .formula-table td{padding:10px 16px;line-height:1.5;color:var(--text)}
-  .notes-wrap .f-formula{font-family:monospace;font-size:.9rem;font-weight:700;color:var(--accent)}
-  .notes-wrap .mistake-list{display:flex;flex-direction:column;gap:10px}
-  .notes-wrap .mistake{display:flex;gap:14px;align-items:flex-start;background:var(--surface);border:1.5px solid var(--border);border-left:4px solid var(--accent);border-radius:0 12px 12px 0;padding:14px 16px;font-size:.88rem;line-height:1.6}
-  .notes-wrap .mistake-x{font-size:1rem;font-weight:700;color:var(--accent);flex-shrink:0;margin-top:1px}
-  .notes-wrap .mistake em{color:var(--accent);font-style:normal;font-weight:600}
-  .notes-wrap .def-table{width:100%;border-collapse:collapse;font-size:.88rem}
-  .notes-wrap .def-table thead tr{background:#111}
-  .notes-wrap .def-table th{padding:10px 16px;text-align:left;font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.7)}
-  .notes-wrap .def-table tbody tr{background:var(--surface);border-bottom:1px solid var(--border)}
-  .notes-wrap .def-table tbody tr:hover{background:var(--accent-light)}
-  .notes-wrap .def-table td{padding:10px 16px;line-height:1.55;color:var(--text);vertical-align:top}
-  .notes-wrap .def-table td:first-child{font-weight:600;white-space:nowrap;color:var(--accent);width:200px}
-  .notes-wrap .reveal{opacity:0;transform:translateY(20px);transition:opacity .55s ease,transform .55s ease}
-  .notes-wrap .reveal.visible{opacity:1;transform:none}
-  .notes-wrap .hero-tag{display:inline-block;background:rgba(212,82,42,.2);color:#ff9980;border:1px solid rgba(212,82,42,.35);font-size:.68rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:4px 12px;border-radius:99px;margin-bottom:14px}
-  .notes-wrap .hero-title{font-size:clamp(1.8rem,4vw,2.8rem);font-weight:800;color:#fff;letter-spacing:-.04em;line-height:1.1;margin-bottom:12px}
-  .notes-wrap .hero-sub{color:rgba(255,255,255,.5);font-size:.95rem;max-width:480px;line-height:1.7}
-  .notes-wrap .hero-bar{height:3px;background:linear-gradient(90deg,var(--accent),#f5a623,#2E9E6B);margin:32px 0 48px;border-radius:2px}
-  .notes-wrap .notes-layout{display:flex;min-height:calc(100vh - 56px)}
-  .notes-wrap .notes-sidebar{flex-shrink:0;background:#111;border-right:1px solid #2a2a2a;position:sticky;top:56px;height:calc(100vh - 56px);overflow-y:auto;overflow-x:hidden;width:220px;transition:width .25s ease,opacity .25s ease,border-color .25s ease}
-  .notes-wrap .notes-sidebar.collapsed{width:0;opacity:0;border-right-color:transparent}
-  .notes-wrap .sidebar-inner{padding:20px 0;min-width:220px;width:220px}
-  .notes-wrap .sidebar-label{font-size:.6rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.28);padding:16px 16px 6px;display:block;white-space:nowrap}
-  .notes-wrap .sidebar-link{display:flex;align-items:center;gap:8px;padding:8px 16px;color:rgba(255,255,255,.55);text-decoration:none;font-size:.8rem;font-weight:500;border-left:3px solid transparent;transition:all .18s ease;cursor:pointer;background:none;border-top:none;border-right:none;border-bottom:none;width:100%;text-align:left;white-space:nowrap}
-  .notes-wrap .sidebar-link:hover{color:#fff;background:rgba(255,255,255,.05)}
-  .notes-wrap .sidebar-link.active{color:#fff;background:rgba(255,255,255,.06);border-left-color:var(--accent)}
-  .notes-wrap .sidebar-num{background:rgba(255,255,255,.1);color:rgba(255,255,255,.5);font-size:.62rem;font-weight:700;border-radius:4px;padding:1px 5px;font-family:monospace;flex-shrink:0}
-  .notes-wrap .sidebar-link.active .sidebar-num{background:rgba(212,82,42,.3);color:var(--accent)}
-  .notes-wrap .notes-main{flex:1;min-width:0;padding:48px 56px;transition:padding .25s ease}
-  .notes-wrap .sidebar-toggle{position:fixed;bottom:24px;left:24px;z-index:100;width:36px;height:36px;border-radius:50%;background:#1a1a1a;border:1px solid #2a2a2a;color:#f0f0f0;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s ease}
-  .notes-wrap .sidebar-toggle:hover{background:#252525}
-  @media(max-width:768px){
-    .notes-wrap .notes-sidebar{position:fixed;top:56px;left:0;height:calc(100vh - 56px);z-index:90}
-    .notes-wrap .notes-main{padding:28px 20px}
-    .notes-wrap .two-col{grid-template-columns:1fr}
-    .notes-wrap .stores-grid{grid-template-columns:1fr 1fr}
-    .notes-wrap .renew-grid{grid-template-columns:1fr}
-    .notes-wrap .grid-explainer{flex-direction:column}
-    .notes-wrap .chain{flex-direction:column;gap:8px}
-    .notes-wrap .chain-label{min-width:unset}
-    .notes-wrap .def-table td:first-child{white-space:normal;width:auto}
-  }
-`;
-
-const NAV = [
+const TOPICS = [
   { num:"01", id:"stores",       label:"Energy Stores" },
   { num:"02", id:"transfers",    label:"Transfers & Pathways" },
   { num:"03", id:"calculations", label:"Calculations" },
   { num:"04", id:"resources",    label:"Energy Resources" },
   { num:"05", id:"efficiency",   label:"Efficiency" },
   { num:"06", id:"generation",   label:"Electricity Generation" },
-  { num:"07", id:"formulas",     label:"Key Formulas" },
-  { num:"08", id:"mistakes",     label:"Exam Mistakes" },
-  { num:"09", id:"glossary",     label:"Glossary" },
-];
+]
+
+const REFERENCE = [
+  { num:"07", id:"formulas", label:"Key Formulas" },
+  { num:"08", id:"mistakes", label:"Exam Mistakes" },
+  { num:"09", id:"glossary", label:"Glossary" },
+]
 
 export default function Notes() {
-  const [activeId, setActiveId] = useState("stores");
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-
-  useEffect(() => {
-    const onScroll = () => {
-      let cur = "";
-      NAV.forEach(({ id }) => {
-        const el = document.getElementById(id);
-        if (el && window.scrollY >= el.offsetTop - 140) cur = id;
-      });
-      if (cur) setActiveId(cur);
-    };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  useEffect(() => {
-    const els = document.querySelectorAll(".reveal");
-    const obs = new IntersectionObserver(entries => {
-      entries.forEach(e => {
-        if (e.isIntersecting) { e.target.classList.add("visible"); obs.unobserve(e.target); }
-      });
-    }, { threshold: 0.06 });
-    els.forEach(el => obs.observe(el));
-    return () => obs.disconnect();
-  }, []);
-
   return (
-    <div className="notes-wrap" style={{ fontFamily: "'Inter', sans-serif", color: "#f0f0f0" }}>
-      <style>{css}</style>
-      <button className="sidebar-toggle" onClick={() => setSidebarOpen(o => !o)} aria-label="Toggle sidebar">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-          <path d="M3 4h10M3 8h10M3 12h10" stroke="#f0f0f0" strokeWidth="1.8" strokeLinecap="round"/>
-        </svg>
-      </button>
-      <div className="notes-layout">
-        <aside className={`notes-sidebar${sidebarOpen ? "" : " collapsed"}`}>
-          <div className="sidebar-inner">
-            <span className="sidebar-label">Topics</span>
-            {NAV.slice(0, 6).map(({ num, id, label }) => (
-              <button key={id} className={`sidebar-link${activeId === id ? " active" : ""}`}
-                onClick={() => document.getElementById(id)?.scrollIntoView({ behavior: "smooth" })}>
-                <span className="sidebar-num">{num}</span>{label}
-              </button>
-            ))}
-            <span className="sidebar-label">Reference</span>
-            {NAV.slice(6).map(({ num, id, label }) => (
-              <button key={id} className={`sidebar-link${activeId === id ? " active" : ""}`}
-                onClick={() => document.getElementById(id)?.scrollIntoView({ behavior: "smooth" })}>
-                <span className="sidebar-num">{num}</span>{label}
-              </button>
-            ))}
-          </div>
-        </aside>
-        <main className="notes-main">
+    <NotesLayout
+      tag="GCSE Physics"
+      title="Energy & Power"
+      subtitle="Clear, simple notes covering everything you need to know — stores, transfers, calculations, resources, and generation."
+      accent="#d4522a"
+      topics={TOPICS}
+      reference={REFERENCE}
+    >
 
-        {/* Hero */}
-        <div className="hero-tag">GCSE Physics</div>
-        <h1 className="hero-title">Energy &amp; Power</h1>
-        <p className="hero-sub">Clear, simple notes covering everything you need to know — stores, transfers, calculations, resources, and generation.</p>
-        <div className="hero-bar" />
+      {/* 01 ENERGY STORES */}
+      <section className="section reveal" id="stores">
+        <div className="section-header">
+          <div className="section-num">01</div>
+          <h2>Energy Stores</h2>
+        </div>
+        <div className="intro">
+          The <strong>Law of Conservation of Energy</strong> states that energy cannot be created or destroyed — it can only be transferred between stores or converted from one form to another. The total energy in a closed system always stays the same.
+        </div>
+        <h3>The 8 Energy Stores</h3>
+        <div className="stores-grid">
+          {[
+            { icon:"⚡", name:"Kinetic",                desc:"Energy in any moving object. The faster it moves and the more mass it has, the more kinetic energy it stores.",                                     formula:"Ek = ½mv²" },
+            { icon:"🌡️", name:"Thermal",               desc:"All objects store thermal energy. The hotter the object, the more it stores. Heat always flows from hot → cold.",                                  formula:"ΔE = mcΔθ" },
+            { icon:"⚗️", name:"Chemical",              desc:"Stored in the bonds between atoms. Released during chemical reactions. Examples: food, fuel, batteries." },
+            { icon:"⬆️", name:"Gravitational Potential",desc:"Stored in objects above the ground. The higher up and heavier the object, the more GPE it has.",                                                 formula:"GPE = mgh" },
+            { icon:"🌀", name:"Elastic Potential",      desc:"Stored when an object is stretched or squashed — e.g. a spring or rubber band. Released when it returns to its original shape.",                  formula:"Ee = ½ke²" },
+            { icon:"🧲", name:"Magnetic",               desc:"Stored in magnets and magnetic fields. Like poles repel, unlike poles attract — energy is stored in this interaction." },
+            { icon:"⚡", name:"Electrostatic",          desc:"Stored between charged objects. Like charges repel, unlike charges attract. Lightning is electrostatic energy being released." },
+            { icon:"☢️", name:"Nuclear",               desc:"Stored in the nucleus of atoms. Released by fission (splitting) or fusion (joining). This is how stars produce energy." },
+          ].map(({ icon, name, desc, formula }) => (
+            <div className="store-card" key={name}>
+              <div className="store-icon">{icon}</div>
+              <div className="store-name">{name}</div>
+              <div className="store-desc">{desc}</div>
+              {formula && <div className="store-formula">{formula}</div>}
+            </div>
+          ))}
+        </div>
+      </section>
 
-        {/* 01 ENERGY STORES */}
-        <section className="section reveal" id="stores">
-          <div className="section-header">
-            <div className="section-num">01</div>
-            <h2>Energy Stores</h2>
-          </div>
-          <div className="intro">
-            The <strong>Law of Conservation of Energy</strong> states that energy cannot be created or destroyed — it can only be transferred between stores or converted from one form to another. The total energy in a closed system always stays the same.
-          </div>
-          <h3>The 8 Energy Stores</h3>
-          <div className="stores-grid">
-            {[
-              { icon:"⚡", name:"Kinetic",                desc:"Energy in any moving object. The faster it moves and the more mass it has, the more kinetic energy it stores.",                                      formula:"Ek = ½mv²" },
-              { icon:"🌡️", name:"Thermal",               desc:"All objects store thermal energy. The hotter the object, the more it stores. Heat always flows from hot → cold.",                                   formula:"ΔE = mcΔθ" },
-              { icon:"⚗️", name:"Chemical",              desc:"Stored in the bonds between atoms. Released during chemical reactions. Examples: food, fuel, batteries." },
-              { icon:"⬆️", name:"Gravitational Potential",desc:"Stored in objects above the ground. The higher up and heavier the object, the more GPE it has.",                                                  formula:"GPE = mgh" },
-              { icon:"🌀", name:"Elastic Potential",      desc:"Stored when an object is stretched or squashed — e.g. a spring or rubber band. Released when it returns to its original shape.",                   formula:"Ee = ½ke²" },
-              { icon:"🧲", name:"Magnetic",               desc:"Stored in magnets and magnetic fields. Like poles repel, unlike poles attract — energy is stored in this interaction." },
-              { icon:"⚡", name:"Electrostatic",          desc:"Stored between charged objects. Like charges repel, unlike charges attract. Lightning is electrostatic energy being released." },
-              { icon:"☢️", name:"Nuclear",               desc:"Stored in the nucleus of atoms. Released by fission (splitting) or fusion (joining). This is how stars produce energy." },
-            ].map(({ icon, name, desc, formula }) => (
-              <div className="store-card" key={name}>
-                <div className="store-icon">{icon}</div>
-                <div className="store-name">{name}</div>
-                <div className="store-desc">{desc}</div>
-                {formula && <div className="store-formula">{formula}</div>}
-              </div>
-            ))}
-          </div>
-        </section>
+      <div className="divider" />
 
-        <div className="divider" />
-
-        {/* 02 TRANSFERS */}
-        <section className="section reveal" id="transfers">
-          <div className="section-header">
-            <div className="section-num">02</div>
-            <h2>Transfers &amp; Pathways</h2>
-          </div>
-          <div className="intro">
-            Energy moves between stores through <strong>pathways</strong>. There are 4 pathways. When energy is transferred, some is always wasted — usually as thermal energy spreading into the surroundings. This is called <strong>dissipation</strong>.
-          </div>
-          <h3>The 4 Energy Pathways</h3>
-          <div className="two-col">
-            {[
-              { icon:"🔧", head:"Mechanical", body:"A force causes movement. Example: pushing a box transfers energy from your muscles to the kinetic store of the box." },
-              { icon:"🔌", head:"Electrical",  body:"Moving charges (current) transfer energy through a circuit. Example: a wire carrying current from a battery to a bulb." },
-              { icon:"🔥", head:"Heating",     body:<>Energy moves from hotter to cooler objects. Three methods:<br/><strong>Conduction</strong> — through solids<br/><strong>Convection</strong> — through liquids/gases<br/><strong>Radiation</strong> — through space as infrared waves</> },
-              { icon:"💡", head:"Radiation",   body:"Energy travels as waves — light, infrared, sound, and other electromagnetic waves." },
-            ].map(({ icon, head, body }) => (
-              <div className="info-card" key={head}>
-                <div className="info-head">{icon} {head}</div>
-                <p>{body}</p>
-              </div>
-            ))}
-          </div>
-          <h3>Energy Transfer Chains</h3>
-          <div className="chain-list">
-            {[
-              { label:"Falling ball",    steps:[{t:"Gravitational Potential"},{t:"Kinetic"},{t:"Thermal (impact)",w:true}] },
-              { label:"Phone charging",  steps:[{t:"Chemical (battery pack)"},{t:"Electrical"},{t:"Chemical (phone)"}] },
-              { label:"Light bulb",      steps:[{t:"Electrical"},{t:"Light",plus:true},{t:"Thermal (wasted)",w:true}] },
-              { label:"Power station",   steps:[{t:"Chemical (fuel)"},{t:"Thermal"},{t:"Kinetic"},{t:"Electrical"}] },
-            ].map(({ label, steps }) => (
-              <div className="chain" key={label}>
-                <span className="chain-label">{label}</span>
-                <div className="chain-steps">
-                  {steps.map((s, i) => (
-                    <span key={i}>
-                      <span className={`chain-step${s.w ? " waste" : ""}`}>{s.t}</span>
-                      {i < steps.length - 1 && <span className="chain-arrow">{s.plus ? " +" : " →"}</span>}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="callout">
-            <div className="callout-title">What is a Sankey Diagram?</div>
-            A visual way to show energy transfers. The width of each arrow is proportional to the amount of energy. Useful energy goes straight ahead; wasted energy branches downward. The total input always equals all outputs added together.
-          </div>
-        </section>
-
-        <div className="divider" />
-
-        {/* 03 CALCULATIONS */}
-        <section className="section reveal" id="calculations">
-          <div className="section-header">
-            <div className="section-num">03</div>
-            <h2>Calculations</h2>
-          </div>
-          <div className="intro">
-            These are the four main calculations you need to know. Always check your units before substituting into a formula — time must be in <strong>seconds</strong>, distance in <strong>metres</strong>, mass in <strong>kg</strong>.
-          </div>
-          <h3>Work Done</h3>
-          <div className="calc-block">
-            <div className="calc-formula-big">W = F × d</div>
-            <div className="calc-legend">
-              <span><strong>W</strong> = Work Done (Joules, J)</span>
-              <span><strong>F</strong> = Force (Newtons, N)</span>
-              <span><strong>d</strong> = Distance (metres, m)</span>
+      {/* 02 TRANSFERS */}
+      <section className="section reveal" id="transfers">
+        <div className="section-header">
+          <div className="section-num">02</div>
+          <h2>Transfers &amp; Pathways</h2>
+        </div>
+        <div className="intro">
+          Energy moves between stores through <strong>pathways</strong>. There are 4 pathways. When energy is transferred, some is always wasted — usually as thermal energy spreading into the surroundings. This is called <strong>dissipation</strong>.
+        </div>
+        <h3>The 4 Energy Pathways</h3>
+        <div className="two-col">
+          {[
+            { icon:"🔧", head:"Mechanical", body:"A force causes movement. Example: pushing a box transfers energy from your muscles to the kinetic store of the box." },
+            { icon:"🔌", head:"Electrical",  body:"Moving charges (current) transfer energy through a circuit. Example: a wire carrying current from a battery to a bulb." },
+            { icon:"🔥", head:"Heating",     body:<>Energy moves from hotter to cooler objects. Three methods:<br/><strong>Conduction</strong> — through solids<br/><strong>Convection</strong> — through liquids/gases<br/><strong>Radiation</strong> — through space as infrared waves</> },
+            { icon:"💡", head:"Radiation",   body:"Energy travels as waves — light, infrared, sound, and other electromagnetic waves." },
+          ].map(({ icon, head, body }) => (
+            <div className="info-card" key={head}>
+              <div className="info-head">{icon} {head}</div>
+              <p>{body}</p>
             </div>
-            <div className="calc-notes">
-              <p>Work done = energy transferred. They are the same thing, measured in Joules.</p>
-              <p><strong>No movement = no work done</strong>, even if a force is applied (e.g. pushing a wall).</p>
-              <p><strong>Example:</strong> A person pushes a box with 50 N over 3 m → W = 50 × 3 = <strong>150 J</strong></p>
-            </div>
-          </div>
-          <h3>Power</h3>
-          <div className="calc-block">
-            <div className="calc-formula-big">P = E ÷ t</div>
-            <div className="calc-legend">
-              <span><strong>P</strong> = Power (Watts, W)</span>
-              <span><strong>E</strong> = Energy (Joules, J)</span>
-              <span><strong>t</strong> = Time (<em>seconds</em>, s)</span>
-            </div>
-            <div className="calc-notes">
-              <p>Power is the <strong>rate of energy transfer</strong> — how quickly energy is used or transferred. 1 W = 1 J per second.</p>
-              <p><strong>Always convert time to seconds</strong> before calculating. Minutes × 60. Hours × 3,600.</p>
-              <p><strong>Example:</strong> A motor transfers 6,000 J in 2 minutes → 2 min = 120 s → P = 6,000 ÷ 120 = <strong>50 W</strong></p>
-            </div>
-          </div>
-          <h3>Kinetic Energy</h3>
-          <div className="calc-block">
-            <div className="calc-formula-big">Ek = ½mv²</div>
-            <div className="calc-legend">
-              <span><strong>Ek</strong> = Kinetic Energy (J)</span>
-              <span><strong>m</strong> = mass (kg)</span>
-              <span><strong>v</strong> = speed (m/s)</span>
-            </div>
-            <div className="calc-notes">
-              <p><strong>Speed is squared</strong> — this is the most common mistake. If a car doubles its speed, its kinetic energy quadruples (×4).</p>
-              <p><strong>Example:</strong> 1,000 kg car at 20 m/s → Ek = ½ × 1000 × 400 = <strong>200,000 J</strong></p>
-            </div>
-          </div>
-          <h3>Gravitational Potential Energy</h3>
-          <div className="calc-block">
-            <div className="calc-formula-big">GPE = mgh</div>
-            <div className="calc-legend">
-              <span><strong>m</strong> = mass (kg)</span>
-              <span><strong>g</strong> = 10 N/kg on Earth</span>
-              <span><strong>h</strong> = height (m)</span>
-            </div>
-            <div className="calc-notes">
-              <p><strong>Example:</strong> 2 kg book on a 1 m shelf → GPE = 2 × 10 × 1 = <strong>20 J</strong></p>
-            </div>
-          </div>
-          <h3>Efficiency</h3>
-          <div className="calc-block">
-            <div className="calc-formula-big">η = (useful output ÷ total input) × 100%</div>
-            <div className="calc-notes">
-              <p>Efficiency tells you what percentage of input energy is actually useful. <strong>Maximum is 100%</strong> — impossible in practice because there is always some wasted energy.</p>
-              <p><strong>Example:</strong> Motor uses 500 J, produces 350 J of kinetic energy → efficiency = (350 ÷ 500) × 100 = <strong>70%</strong>. The other 150 J is wasted as heat.</p>
-            </div>
-          </div>
-          <div className="callout warn">
-            <div className="callout-title">⚠ Unit Conversions to Remember</div>
-            <div className="unit-grid">
-              {[["Minutes → seconds","× 60"],["Hours → seconds","× 3,600"],["kW → W","× 1,000"],["MW → W","× 1,000,000"],["km → m","× 1,000"]].map(([l,v]) => (
-                <div className="unit-row" key={l}><span>{l}</span><span className="unit-val">{v}</span></div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <div className="divider" />
-
-        {/* 04 RESOURCES */}
-        <section className="section reveal" id="resources">
-          <div className="section-header">
-            <div className="section-num">04</div>
-            <h2>Energy Resources</h2>
-          </div>
-          <div className="intro">
-            Energy resources are used for three things: <strong>transport</strong>, <strong>heating</strong>, and <strong>generating electricity</strong>. They split into two types — non-renewable (will run out) and renewable (will not run out).
-          </div>
-          <h3>Non-Renewable Sources</h3>
-          <div className="resource-block">
-            <div className="resource-head nonrenew">🪨 Fossil Fuels (Coal, Oil, Natural Gas)</div>
-            <div className="two-col tight">
-              <div className="pro-card">
-                <div className="pro-head">Advantages</div>
-                <ul>
-                  <li>Very reliable — can generate on demand, 24/7</li>
-                  <li>High energy density — small amount = lots of energy</li>
-                  <li>Existing infrastructure already in place</li>
-                </ul>
-              </div>
-              <div className="con-card">
-                <div className="con-head">Disadvantages</div>
-                <ul>
-                  <li>Releases CO₂ → greenhouse effect → climate change</li>
-                  <li>Releases SO₂ → acid rain → damages forests and buildings</li>
-                  <li>Finite — will run out (oil and gas: ~50–100 years)</li>
-                  <li>Damaging to extract (mining, drilling, oil spills)</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-          <div className="resource-block">
-            <div className="resource-head nonrenew">☢️ Nuclear</div>
-            <div className="two-col tight">
-              <div className="pro-card">
-                <div className="pro-head">Advantages</div>
-                <ul>
-                  <li>No CO₂ emissions during operation</li>
-                  <li>Very high energy density — tiny amount of fuel, huge output</li>
-                  <li>Reliable — not weather dependent</li>
-                </ul>
-              </div>
-              <div className="con-card">
-                <div className="con-head">Disadvantages</div>
-                <ul>
-                  <li>Produces radioactive waste — dangerous for thousands of years</li>
-                  <li>Risk of accidents (Chernobyl 1986, Fukushima 2011)</li>
-                  <li>Very expensive to build; takes many years</li>
-                  <li>Still non-renewable — uranium will eventually run out</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-          <h3>Renewable Sources</h3>
-          <div className="renew-grid">
-            {[
-              { icon:"💨", head:"Wind",         how:"Wind turns turbine blades → spins a generator.",                           pros:"✓ No CO₂, free fuel, can be offshore",                                  cons:"✗ Unreliable — no wind = no power. Can be noisy." },
-              { icon:"☀️", head:"Solar",        how:"Photovoltaic cells convert sunlight directly into electricity.",            pros:"✓ No CO₂, low maintenance, no moving parts",                            cons:"✗ Only works in daylight. Less effective in UK climate." },
-              { icon:"💧", head:"Hydroelectric",how:"Water behind a dam falls through turbines.",                                pros:"✓ Very reliable, responds to demand instantly",                         cons:"✗ Flooding valleys destroys habitats. High build cost." },
-              { icon:"🌊", head:"Tidal",        how:"Tidal barrages harness the movement of tides.",                            pros:"✓ Most predictable renewable — tides guaranteed twice daily",            cons:"✗ Very expensive. Limited suitable locations." },
-              { icon:"🌿", head:"Biofuels",     how:"Fuels made from plants or organic waste, burned for energy.",              pros:"✓ Carbon neutral — CO₂ released ≈ CO₂ absorbed while growing",          cons:"✗ Uses farmland. Still releases CO₂ when burned." },
-              { icon:"🌋", head:"Geothermal",   how:"Heat from deep inside the Earth turns water to steam.",                    pros:"✓ Reliable, low emissions, constant heat source",                       cons:"✗ Only works near tectonic plate boundaries (e.g. Iceland)." },
-            ].map(({ icon, head, how, pros, cons }) => (
-              <div className="renew-card" key={head}>
-                <div className="renew-head">{icon} {head}</div>
-                <p className="renew-how">{how}</p>
-                <div className="renew-pros">{pros}</div>
-                <div className="renew-cons">{cons}</div>
-              </div>
-            ))}
-          </div>
-          <div className="callout">
-            <div className="callout-title">Reliability Ranking</div>
-            <div className="reliability-bar">
-              <span className="rel-label">Most reliable</span>
-              <div className="rel-items">
-                {[["Hydroelectric","high"],["Tidal","high"],["Nuclear","mid"],["Fossil Fuels","mid"],["Wind ≈ Solar ≈ Wave","low"]].map(([label,cls],i,arr) => (
-                  <span key={label}>
-                    <span className={`rel-item ${cls}`}>{label}</span>
-                    {i < arr.length-1 && <span className="rel-arrow">›</span>}
+          ))}
+        </div>
+        <h3>Energy Transfer Chains</h3>
+        <div className="chain-list">
+          {[
+            { label:"Falling ball",   steps:[{t:"Gravitational Potential"},{t:"Kinetic"},{t:"Thermal (impact)",w:true}] },
+            { label:"Phone charging", steps:[{t:"Chemical (battery pack)"},{t:"Electrical"},{t:"Chemical (phone)"}] },
+            { label:"Light bulb",     steps:[{t:"Electrical"},{t:"Light",plus:true},{t:"Thermal (wasted)",w:true}] },
+            { label:"Power station",  steps:[{t:"Chemical (fuel)"},{t:"Thermal"},{t:"Kinetic"},{t:"Electrical"}] },
+          ].map(({ label, steps }) => (
+            <div className="chain" key={label}>
+              <span className="chain-label">{label}</span>
+              <div className="chain-steps">
+                {steps.map((s, i) => (
+                  <span key={i}>
+                    <span className={`chain-step${s.w ? " waste" : ""}`}>{s.t}</span>
+                    {i < steps.length - 1 && <span className="chain-arrow">{s.plus ? " +" : " →"}</span>}
                   </span>
                 ))}
               </div>
-              <span className="rel-label">Least reliable</span>
+            </div>
+          ))}
+        </div>
+        <div className="callout">
+          <div className="callout-title">What is a Sankey Diagram?</div>
+          A visual way to show energy transfers. The width of each arrow is proportional to the amount of energy. Useful energy goes straight ahead; wasted energy branches downward. The total input always equals all outputs added together.
+        </div>
+      </section>
+
+      <div className="divider" />
+
+      {/* 03 CALCULATIONS */}
+      <section className="section reveal" id="calculations">
+        <div className="section-header">
+          <div className="section-num">03</div>
+          <h2>Calculations</h2>
+        </div>
+        <div className="intro">
+          These are the four main calculations you need to know. Always check your units before substituting into a formula — time must be in <strong>seconds</strong>, distance in <strong>metres</strong>, mass in <strong>kg</strong>.
+        </div>
+        <h3>Work Done</h3>
+        <div className="calc-block">
+          <div className="calc-formula-big">W = F × d</div>
+          <div className="calc-legend">
+            <span><strong>W</strong> = Work Done (Joules, J)</span>
+            <span><strong>F</strong> = Force (Newtons, N)</span>
+            <span><strong>d</strong> = Distance (metres, m)</span>
+          </div>
+          <div className="calc-notes">
+            <p>Work done = energy transferred. They are the same thing, measured in Joules.</p>
+            <p><strong>No movement = no work done</strong>, even if a force is applied (e.g. pushing a wall).</p>
+            <p><strong>Example:</strong> A person pushes a box with 50 N over 3 m → W = 50 × 3 = <strong>150 J</strong></p>
+          </div>
+        </div>
+        <h3>Power</h3>
+        <div className="calc-block">
+          <div className="calc-formula-big">P = E ÷ t</div>
+          <div className="calc-legend">
+            <span><strong>P</strong> = Power (Watts, W)</span>
+            <span><strong>E</strong> = Energy (Joules, J)</span>
+            <span><strong>t</strong> = Time (<em>seconds</em>, s)</span>
+          </div>
+          <div className="calc-notes">
+            <p>Power is the <strong>rate of energy transfer</strong> — how quickly energy is used or transferred. 1 W = 1 J per second.</p>
+            <p><strong>Always convert time to seconds</strong> before calculating. Minutes × 60. Hours × 3,600.</p>
+            <p><strong>Example:</strong> A motor transfers 6,000 J in 2 minutes → 2 min = 120 s → P = 6,000 ÷ 120 = <strong>50 W</strong></p>
+          </div>
+        </div>
+        <h3>Kinetic Energy</h3>
+        <div className="calc-block">
+          <div className="calc-formula-big">Ek = ½mv²</div>
+          <div className="calc-legend">
+            <span><strong>Ek</strong> = Kinetic Energy (J)</span>
+            <span><strong>m</strong> = mass (kg)</span>
+            <span><strong>v</strong> = speed (m/s)</span>
+          </div>
+          <div className="calc-notes">
+            <p><strong>Speed is squared</strong> — this is the most common mistake. If a car doubles its speed, its kinetic energy quadruples (×4).</p>
+            <p><strong>Example:</strong> 1,000 kg car at 20 m/s → Ek = ½ × 1000 × 400 = <strong>200,000 J</strong></p>
+          </div>
+        </div>
+        <h3>Gravitational Potential Energy</h3>
+        <div className="calc-block">
+          <div className="calc-formula-big">GPE = mgh</div>
+          <div className="calc-legend">
+            <span><strong>m</strong> = mass (kg)</span>
+            <span><strong>g</strong> = 10 N/kg on Earth</span>
+            <span><strong>h</strong> = height (m)</span>
+          </div>
+          <div className="calc-notes">
+            <p><strong>Example:</strong> 2 kg book on a 1 m shelf → GPE = 2 × 10 × 1 = <strong>20 J</strong></p>
+          </div>
+        </div>
+        <h3>Efficiency</h3>
+        <div className="calc-block">
+          <div className="calc-formula-big">η = (useful output ÷ total input) × 100%</div>
+          <div className="calc-notes">
+            <p>Efficiency tells you what percentage of input energy is actually useful. <strong>Maximum is 100%</strong> — impossible in practice because there is always some wasted energy.</p>
+            <p><strong>Example:</strong> Motor uses 500 J, produces 350 J of kinetic energy → efficiency = (350 ÷ 500) × 100 = <strong>70%</strong>. The other 150 J is wasted as heat.</p>
+          </div>
+        </div>
+        <div className="callout warn">
+          <div className="callout-title">⚠ Unit Conversions to Remember</div>
+          <div className="unit-grid">
+            {[["Minutes → seconds","× 60"],["Hours → seconds","× 3,600"],["kW → W","× 1,000"],["MW → W","× 1,000,000"],["km → m","× 1,000"]].map(([l,v]) => (
+              <div className="unit-row" key={l}><span>{l}</span><span className="unit-val">{v}</span></div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <div className="divider" />
+
+      {/* 04 RESOURCES */}
+      <section className="section reveal" id="resources">
+        <div className="section-header">
+          <div className="section-num">04</div>
+          <h2>Energy Resources</h2>
+        </div>
+        <div className="intro">
+          Energy resources are used for three things: <strong>transport</strong>, <strong>heating</strong>, and <strong>generating electricity</strong>. They split into two types — non-renewable (will run out) and renewable (will not run out).
+        </div>
+        <h3>Non-Renewable Sources</h3>
+        <div className="resource-block">
+          <div className="resource-head nonrenew">🪨 Fossil Fuels (Coal, Oil, Natural Gas)</div>
+          <div className="two-col tight">
+            <div className="pro-card">
+              <div className="pro-head">Advantages</div>
+              <ul>
+                <li>Very reliable — can generate on demand, 24/7</li>
+                <li>High energy density — small amount = lots of energy</li>
+                <li>Existing infrastructure already in place</li>
+              </ul>
+            </div>
+            <div className="con-card">
+              <div className="con-head">Disadvantages</div>
+              <ul>
+                <li>Releases CO₂ → greenhouse effect → climate change</li>
+                <li>Releases SO₂ → acid rain → damages forests and buildings</li>
+                <li>Finite — will run out (oil and gas: ~50–100 years)</li>
+                <li>Damaging to extract (mining, drilling, oil spills)</li>
+              </ul>
             </div>
           </div>
-        </section>
+        </div>
+        <div className="resource-block">
+          <div className="resource-head nonrenew">☢️ Nuclear</div>
+          <div className="two-col tight">
+            <div className="pro-card">
+              <div className="pro-head">Advantages</div>
+              <ul>
+                <li>No CO₂ emissions during operation</li>
+                <li>Very high energy density — tiny amount of fuel, huge output</li>
+                <li>Reliable — not weather dependent</li>
+              </ul>
+            </div>
+            <div className="con-card">
+              <div className="con-head">Disadvantages</div>
+              <ul>
+                <li>Produces radioactive waste — dangerous for thousands of years</li>
+                <li>Risk of accidents (Chernobyl 1986, Fukushima 2011)</li>
+                <li>Very expensive to build; takes many years</li>
+                <li>Still non-renewable — uranium will eventually run out</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <h3>Renewable Sources</h3>
+        <div className="renew-grid">
+          {[
+            { icon:"💨", head:"Wind",         how:"Wind turns turbine blades → spins a generator.",                          pros:"✓ No CO₂, free fuel, can be offshore",                               cons:"✗ Unreliable — no wind = no power. Can be noisy." },
+            { icon:"☀️", head:"Solar",        how:"Photovoltaic cells convert sunlight directly into electricity.",           pros:"✓ No CO₂, low maintenance, no moving parts",                         cons:"✗ Only works in daylight. Less effective in UK climate." },
+            { icon:"💧", head:"Hydroelectric",how:"Water behind a dam falls through turbines.",                               pros:"✓ Very reliable, responds to demand instantly",                      cons:"✗ Flooding valleys destroys habitats. High build cost." },
+            { icon:"🌊", head:"Tidal",        how:"Tidal barrages harness the movement of tides.",                           pros:"✓ Most predictable renewable — tides guaranteed twice daily",         cons:"✗ Very expensive. Limited suitable locations." },
+            { icon:"🌿", head:"Biofuels",     how:"Fuels made from plants or organic waste, burned for energy.",             pros:"✓ Carbon neutral — CO₂ released ≈ CO₂ absorbed while growing",       cons:"✗ Uses farmland. Still releases CO₂ when burned." },
+            { icon:"🌋", head:"Geothermal",   how:"Heat from deep inside the Earth turns water to steam.",                   pros:"✓ Reliable, low emissions, constant heat source",                    cons:"✗ Only works near tectonic plate boundaries (e.g. Iceland)." },
+          ].map(({ icon, head, how, pros, cons }) => (
+            <div className="renew-card" key={head}>
+              <div className="renew-head">{icon} {head}</div>
+              <p className="renew-how">{how}</p>
+              <div className="renew-pros">{pros}</div>
+              <div className="renew-cons">{cons}</div>
+            </div>
+          ))}
+        </div>
+        <div className="callout">
+          <div className="callout-title">Reliability Ranking</div>
+          <div className="reliability-bar">
+            <span className="rel-label">Most reliable</span>
+            <div className="rel-items">
+              {[["Hydroelectric","high"],["Tidal","high"],["Nuclear","mid"],["Fossil Fuels","mid"],["Wind ≈ Solar ≈ Wave","low"]].map(([label,cls],i,arr) => (
+                <span key={label}>
+                  <span className={`rel-item ${cls}`}>{label}</span>
+                  {i < arr.length-1 && <span className="rel-arrow">›</span>}
+                </span>
+              ))}
+            </div>
+            <span className="rel-label">Least reliable</span>
+          </div>
+        </div>
+      </section>
 
-        <div className="divider" />
+      <div className="divider" />
 
-        {/* 05 EFFICIENCY */}
-        <section className="section reveal" id="efficiency">
-          <div className="section-header">
-            <div className="section-num">05</div>
-            <h2>Efficiency &amp; Dissipation</h2>
-          </div>
-          <div className="intro">
-            In every real energy transfer, some energy is <strong>wasted</strong> — usually as thermal energy spreading into the surroundings. This is called <strong>dissipation</strong>. The energy isn't destroyed (conservation of energy still holds) — it just becomes too spread out to be useful.
-          </div>
-          <h3>Examples of Wasted Energy</h3>
-          <div className="waste-list">
-            {[
-              { icon:"🚗", text:<><strong>Car engine</strong> — most of the chemical energy in petrol is wasted as heat and sound, not useful kinetic energy.</> },
-              { icon:"💡", text:<><strong>Filament bulb</strong> — far more energy is transferred as heat than as light. LEDs are much more efficient.</> },
-              { icon:"🔌", text:<><strong>Phone charger left plugged in</strong> — continuously converts electrical energy to thermal energy even when not charging anything.</> },
-              { icon:"🛑", text:<><strong>Car brakes</strong> — kinetic energy is transferred to thermal energy in the brakes and surrounding air. That energy is gone.</> },
-            ].map(({ icon, text }, i) => (
-              <div className="waste-item" key={i}><span className="waste-icon">{icon}</span><div>{text}</div></div>
-            ))}
-          </div>
-          <h3>How to Reduce Wasted Energy</h3>
-          <div className="two-col">
-            {[
-              { icon:"🛢️", head:"Lubrication",         body:"Oil or grease between moving surfaces reduces friction. Less friction = less heat wasted." },
-              { icon:"🏠", head:"Insulation",           body:"Roof insulation, double glazing, and draught excluders slow heat transfer from buildings, reducing energy wasted on heating." },
-              { icon:"🏎️", head:"Streamlining",        body:"Aerodynamic shapes reduce air resistance. Less air resistance = less energy wasted as heat and sound." },
-              { icon:"🔁", head:"Regenerative Braking", body:"Used in electric cars — captures kinetic energy during braking and converts it back to electrical energy instead of wasting it as heat." },
-            ].map(({ icon, head, body }) => (
-              <div className="info-card" key={head}><div className="info-head">{icon} {head}</div><p>{body}</p></div>
-            ))}
-          </div>
-        </section>
+      {/* 05 EFFICIENCY */}
+      <section className="section reveal" id="efficiency">
+        <div className="section-header">
+          <div className="section-num">05</div>
+          <h2>Efficiency &amp; Dissipation</h2>
+        </div>
+        <div className="intro">
+          In every real energy transfer, some energy is <strong>wasted</strong> — usually as thermal energy spreading into the surroundings. This is called <strong>dissipation</strong>. The energy isn't destroyed (conservation of energy still holds) — it just becomes too spread out to be useful.
+        </div>
+        <h3>Examples of Wasted Energy</h3>
+        <div className="waste-list">
+          {[
+            { icon:"🚗", text:<><strong>Car engine</strong> — most of the chemical energy in petrol is wasted as heat and sound, not useful kinetic energy.</> },
+            { icon:"💡", text:<><strong>Filament bulb</strong> — far more energy is transferred as heat than as light. LEDs are much more efficient.</> },
+            { icon:"🔌", text:<><strong>Phone charger left plugged in</strong> — continuously converts electrical energy to thermal energy even when not charging anything.</> },
+            { icon:"🛑", text:<><strong>Car brakes</strong> — kinetic energy is transferred to thermal energy in the brakes and surrounding air. That energy is gone.</> },
+          ].map(({ icon, text }, i) => (
+            <div className="waste-item" key={i}><span className="waste-icon">{icon}</span><div>{text}</div></div>
+          ))}
+        </div>
+        <h3>How to Reduce Wasted Energy</h3>
+        <div className="two-col">
+          {[
+            { icon:"🛢️", head:"Lubrication",         body:"Oil or grease between moving surfaces reduces friction. Less friction = less heat wasted." },
+            { icon:"🏠", head:"Insulation",           body:"Roof insulation, double glazing, and draught excluders slow heat transfer from buildings, reducing energy wasted on heating." },
+            { icon:"🏎️", head:"Streamlining",        body:"Aerodynamic shapes reduce air resistance. Less air resistance = less energy wasted as heat and sound." },
+            { icon:"🔁", head:"Regenerative Braking", body:"Used in electric cars — captures kinetic energy during braking and converts it back to electrical energy instead of wasting it as heat." },
+          ].map(({ icon, head, body }) => (
+            <div className="info-card" key={head}><div className="info-head">{icon} {head}</div><p>{body}</p></div>
+          ))}
+        </div>
+      </section>
 
-        <div className="divider" />
+      <div className="divider" />
 
-        {/* 06 GENERATION */}
-        <section className="section reveal" id="generation">
-          <div className="section-header">
-            <div className="section-num">06</div>
-            <h2>Electricity Generation</h2>
+      {/* 06 GENERATION */}
+      <section className="section reveal" id="generation">
+        <div className="section-header">
+          <div className="section-num">06</div>
+          <h2>Electricity Generation</h2>
+        </div>
+        <div className="intro">
+          Most power stations follow the same basic four-step process to generate electricity. The difference between them is just <strong>what provides the heat</strong>.
+        </div>
+        <h3>How Most Power Stations Work</h3>
+        <div className="steps-list">
+          {[
+            <><strong>Fuel heats water</strong> — whatever the energy source (burning coal, nuclear fission, geothermal heat), it heats water in a boiler.</>,
+            <><strong>Steam is produced</strong> — the water becomes high-pressure steam.</>,
+            <><strong>Steam spins a turbine</strong> — the steam drives a large set of blades on a shaft.</>,
+            <><strong>Generator produces electricity</strong> — the spinning turbine turns a coil of wire inside a magnetic field. This is <em>electromagnetic induction</em>.</>,
+          ].map((text, i) => (
+            <div className="step" key={i}>
+              <span className="step-num">{i+1}</span>
+              <div>{text}</div>
+            </div>
+          ))}
+        </div>
+        <div className="callout">
+          <div className="callout-title">What is Electromagnetic Induction?</div>
+          Moving a wire through a magnetic field (or moving a magnet near a wire) causes a current to flow. The faster the rotation, the stronger the magnetic field, the more turns on the coil → the greater the voltage produced. This is how every generator works.
+        </div>
+        <h3>Exceptions to the Steam Process</h3>
+        <div className="two-col">
+          <div className="info-card accent-border">
+            <div className="info-head">💨 Wind &amp; 💧 Hydroelectric</div>
+            <p>Skip the steam step entirely. Moving air or falling water spins the turbine <strong>directly</strong>.</p>
           </div>
-          <div className="intro">
-            Most power stations follow the same basic four-step process to generate electricity. The difference between them is just <strong>what provides the heat</strong>.
+          <div className="info-card accent-border">
+            <div className="info-head">☀️ Solar PV</div>
+            <p>Completely different — photovoltaic cells convert light directly into electricity using the <strong>photoelectric effect</strong>. No turbine, no steam.</p>
           </div>
-          <h3>How Most Power Stations Work</h3>
-          <div className="steps-list">
-            {[
-              <><strong>Fuel heats water</strong> — whatever the energy source (burning coal, nuclear fission, geothermal heat), it heats water in a boiler.</>,
-              <><strong>Steam is produced</strong> — the water becomes high-pressure steam.</>,
-              <><strong>Steam spins a turbine</strong> — the steam drives a large set of blades on a shaft.</>,
-              <><strong>Generator produces electricity</strong> — the spinning turbine turns a coil of wire inside a magnetic field. This is <em>electromagnetic induction</em>.</>,
-            ].map((text, i) => (
-              <div className="step" key={i}>
-                <span className="step-num">{i+1}</span>
-                <div>{text}</div>
+        </div>
+        <h3>The National Grid</h3>
+        <div className="grid-explainer">
+          {[
+            { icon:"🏭", label:"Power Station",         sub:"Generates electricity" },
+            { icon:"⬆️", label:"Step-Up Transformer",   sub:"Increases voltage to ~400,000 V" },
+            { icon:"🔌", label:"Transmission Cables",   sub:"High voltage = low current = less heat lost" },
+            { icon:"⬇️", label:"Step-Down Transformer", sub:"Reduces to 230 V for homes" },
+            { icon:"🏠", label:"Your Home",             sub:"Safe to use" },
+          ].map(({ icon, label, sub }, i, arr) => (
+            <span key={label} style={{display:"flex",alignItems:"center",gap:8}}>
+              <div className="grid-step">
+                <div className="grid-icon">{icon}</div>
+                <div className="grid-label">{label}</div>
+                <div className="grid-sub">{sub}</div>
               </div>
-            ))}
-          </div>
-          <div className="callout">
-            <div className="callout-title">What is Electromagnetic Induction?</div>
-            Moving a wire through a magnetic field (or moving a magnet near a wire) causes a current to flow. The faster the rotation, the stronger the magnetic field, the more turns on the coil → the greater the voltage produced. This is how every generator works.
-          </div>
-          <h3>Exceptions to the Steam Process</h3>
-          <div className="two-col">
-            <div className="info-card accent-border">
-              <div className="info-head">💨 Wind &amp; 💧 Hydroelectric</div>
-              <p>Skip the steam step entirely. Moving air or falling water spins the turbine <strong>directly</strong>.</p>
-            </div>
-            <div className="info-card accent-border">
-              <div className="info-head">☀️ Solar PV</div>
-              <p>Completely different — photovoltaic cells convert light directly into electricity using the <strong>photoelectric effect</strong>. No turbine, no steam.</p>
-            </div>
-          </div>
-          <h3>The National Grid</h3>
-          <div className="grid-explainer">
+              {i < arr.length-1 && <div className="grid-arrow">→</div>}
+            </span>
+          ))}
+        </div>
+        <p className="grid-note">Electricity is transmitted at <strong>very high voltage</strong> because high voltage means lower current, and lower current means less energy wasted as heat in the cables.</p>
+      </section>
+
+      <div className="divider" />
+
+      {/* 07 FORMULAS */}
+      <section className="section reveal" id="formulas">
+        <div className="section-header">
+          <div className="section-num">07</div>
+          <h2>Key Formulas</h2>
+        </div>
+        <div className="intro">Learn these — you will need them in the exam. Make sure you know what each symbol stands for and what unit the answer comes out in.</div>
+        <table className="formula-table">
+          <thead><tr><th>Formula</th><th>What it calculates</th><th>Units</th></tr></thead>
+          <tbody>
             {[
-              { icon:"🏭", label:"Power Station",         sub:"Generates electricity" },
-              { icon:"⬆️", label:"Step-Up Transformer",   sub:"Increases voltage to ~400,000 V" },
-              { icon:"🔌", label:"Transmission Cables",   sub:"High voltage = low current = less heat lost" },
-              { icon:"⬇️", label:"Step-Down Transformer", sub:"Reduces to 230 V for homes" },
-              { icon:"🏠", label:"Your Home",             sub:"Safe to use" },
-            ].map(({ icon, label, sub }, i, arr) => (
-              <span key={label} style={{display:"flex",alignItems:"center",gap:8}}>
-                <div className="grid-step">
-                  <div className="grid-icon">{icon}</div>
-                  <div className="grid-label">{label}</div>
-                  <div className="grid-sub">{sub}</div>
-                </div>
-                {i < arr.length-1 && <div className="grid-arrow">→</div>}
-              </span>
+              ["Ek = ½mv²",                         "Kinetic energy",                 "Joules (J)"],
+              ["GPE = mgh",                         "Gravitational potential energy",  "Joules (J)"],
+              ["Ee = ½ke²",                         "Elastic potential energy",        "Joules (J)"],
+              ["ΔE = mcΔθ",                         "Thermal energy change",           "Joules (J)"],
+              ["W = F × d",                         "Work done",                       "Joules (J)"],
+              ["P = E ÷ t",                         "Power",                           "Watts (W)"],
+              ["η = (useful out ÷ total in) × 100%","Efficiency",                      "% or decimal"],
+              ["E = P(kW) × t(hours)",              "Energy in kilowatt-hours",        "kWh"],
+            ].map(([f,w,u]) => (
+              <tr key={f}><td className="f-formula">{f}</td><td>{w}</td><td>{u}</td></tr>
             ))}
-          </div>
-          <p className="grid-note">Electricity is transmitted at <strong>very high voltage</strong> because high voltage means lower current, and lower current means less energy wasted as heat in the cables.</p>
-        </section>
+          </tbody>
+        </table>
+      </section>
 
-        <div className="divider" />
+      <div className="divider" />
 
-        {/* 07 FORMULAS */}
-        <section className="section reveal" id="formulas">
-          <div className="section-header">
-            <div className="section-num">07</div>
-            <h2>Key Formulas</h2>
-          </div>
-          <div className="intro">Learn these — you will need them in the exam. Make sure you know what each symbol stands for and what unit the answer comes out in.</div>
-          <table className="formula-table">
-            <thead><tr><th>Formula</th><th>What it calculates</th><th>Units</th></tr></thead>
-            <tbody>
-              {[
-                ["Ek = ½mv²",                         "Kinetic energy",                  "Joules (J)"],
-                ["GPE = mgh",                         "Gravitational potential energy",   "Joules (J)"],
-                ["Ee = ½ke²",                         "Elastic potential energy",         "Joules (J)"],
-                ["ΔE = mcΔθ",                         "Thermal energy change",            "Joules (J)"],
-                ["W = F × d",                         "Work done",                        "Joules (J)"],
-                ["P = E ÷ t",                         "Power",                            "Watts (W)"],
-                ["η = (useful out ÷ total in) × 100%","Efficiency",                       "% or decimal"],
-                ["E = P(kW) × t(hours)",              "Energy in kilowatt-hours",         "kWh"],
-              ].map(([f,w,u]) => (
-                <tr key={f}><td className="f-formula">{f}</td><td>{w}</td><td>{u}</td></tr>
-              ))}
-            </tbody>
-          </table>
-        </section>
+      {/* 08 MISTAKES */}
+      <section className="section reveal" id="mistakes">
+        <div className="section-header">
+          <div className="section-num">08</div>
+          <h2>Common Exam Mistakes</h2>
+        </div>
+        <div className="intro">These are the mistakes that come up most often. Know them before you sit the exam.</div>
+        <div className="mistake-list">
+          {[
+            <><strong>Saying energy is "used up" or "destroyed."</strong> Energy is always conserved — it is transferred or dissipated, never destroyed.</>,
+            <><strong>Confusing power with energy.</strong> Power is the <em>rate</em> of energy transfer (how quickly). Energy is the total amount. Different things.</>,
+            <><strong>Forgetting to square the speed in Ek = ½mv².</strong> This is the most common calculation error in this topic. If speed doubles, Ek quadruples.</>,
+            <><strong>Saying nuclear is renewable.</strong> It is NOT. Uranium supplies are finite and will eventually run out.</>,
+            <><strong>Calling biofuels "zero carbon" or "carbon free."</strong> They are <em>carbon neutral</em> — CO₂ is still released when burned, it's just (roughly) balanced by what the plant absorbed.</>,
+            <><strong>Saying solar and wind are "always unreliable."</strong> The correct term is <em>intermittent</em> or <em>weather-dependent</em>. "Unreliable" is too vague for exam marks.</>,
+            <><strong>Not converting units before calculating.</strong> Time must be in seconds. Distance in metres. Mass in kg. Always check before substituting.</>,
+            <><strong>Thinking efficiency can exceed 100%.</strong> It cannot. That would mean creating energy from nothing.</>,
+          ].map((text, i) => (
+            <div className="mistake" key={i}><span className="mistake-x">✗</span><div>{text}</div></div>
+          ))}
+        </div>
+      </section>
 
-        <div className="divider" />
+      <div className="divider" />
 
-        {/* 08 MISTAKES */}
-        <section className="section reveal" id="mistakes">
-          <div className="section-header">
-            <div className="section-num">08</div>
-            <h2>Common Exam Mistakes</h2>
-          </div>
-          <div className="intro">These are the mistakes that come up most often. Know them before you sit the exam.</div>
-          <div className="mistake-list">
+      {/* 09 GLOSSARY */}
+      <section className="section reveal" id="glossary">
+        <div className="section-header">
+          <div className="section-num">09</div>
+          <h2>Glossary</h2>
+        </div>
+        <div className="intro">Key words you need to know. If any of these come up in an exam question, use the exact definition.</div>
+        <table className="def-table">
+          <thead><tr><th>Word</th><th>Simple definition</th></tr></thead>
+          <tbody>
             {[
-              <><strong>Saying energy is "used up" or "destroyed."</strong> Energy is always conserved — it is transferred or dissipated, never destroyed.</>,
-              <><strong>Confusing power with energy.</strong> Power is the <em>rate</em> of energy transfer (how quickly). Energy is the total amount. Different things.</>,
-              <><strong>Forgetting to square the speed in Ek = ½mv².</strong> This is the most common calculation error in this topic. If speed doubles, Ek quadruples.</>,
-              <><strong>Saying nuclear is renewable.</strong> It is NOT. Uranium supplies are finite and will eventually run out.</>,
-              <><strong>Calling biofuels "zero carbon" or "carbon free."</strong> They are <em>carbon neutral</em> — CO₂ is still released when burned, it's just (roughly) balanced by what the plant absorbed.</>,
-              <><strong>Saying solar and wind are "always unreliable."</strong> The correct term is <em>intermittent</em> or <em>weather-dependent</em>. "Unreliable" is too vague for exam marks.</>,
-              <><strong>Not converting units before calculating.</strong> Time must be in seconds. Distance in metres. Mass in kg. Always check before substituting.</>,
-              <><strong>Thinking efficiency can exceed 100%.</strong> It cannot. That would mean creating energy from nothing.</>,
-            ].map((text, i) => (
-              <div className="mistake" key={i}><span className="mistake-x">✗</span><div>{text}</div></div>
+              ["Conservation of energy","Energy cannot be created or destroyed — only transferred or dissipated."],
+              ["Energy store","A place where energy is held — e.g. kinetic, thermal, chemical."],
+              ["Energy pathway","The route by which energy is transferred — mechanical, electrical, heating, or radiation."],
+              ["Work done","The energy transferred when a force moves an object. W = F × d."],
+              ["Power","The rate of energy transfer. How quickly energy is used or transferred. Measured in Watts."],
+              ["Watt","The unit of power. 1 W = 1 Joule per second."],
+              ["Efficiency","The fraction of input energy that is usefully transferred. Can never exceed 100%."],
+              ["Dissipation","When energy spreads out into the surroundings as thermal energy, becoming too spread out to use."],
+              ["Non-renewable","An energy source that will eventually run out — fossil fuels and nuclear."],
+              ["Renewable","An energy source that is naturally replenished and will not run out."],
+              ["Carbon neutral","When the CO₂ released roughly equals the CO₂ absorbed — net CO₂ ≈ 0. Biofuels are carbon neutral."],
+              ["Intermittent","Not always available — solar and wind are intermittent because they depend on weather."],
+              ["National Grid","The UK network of cables and transformers that delivers electricity from power stations to homes."],
+              ["Electromagnetic induction","The process by which moving a wire through a magnetic field causes a current to flow. How generators work."],
+              ["Nuclear fission","Splitting a large nucleus (e.g. uranium) into smaller ones, releasing huge amounts of energy."],
+              ["Nuclear fusion","Joining two small nuclei (e.g. hydrogen) together. How stars produce energy."],
+              ["Specific heat capacity","The energy needed to raise 1 kg of a substance by 1°C. Water = 4,200 J/kg°C."],
+              ["Elastic limit","The point beyond which a stretched object permanently deforms and won't return to its original shape."],
+              ["kWh","Kilowatt-hour — the unit of energy used on electricity bills. 1 kWh = 3,600,000 J."],
+            ].map(([word,def]) => (
+              <tr key={word}><td>{word}</td><td>{def}</td></tr>
             ))}
-          </div>
-        </section>
+          </tbody>
+        </table>
+      </section>
 
-        <div className="divider" />
-
-        {/* 09 GLOSSARY */}
-        <section className="section reveal" id="glossary">
-          <div className="section-header">
-            <div className="section-num">09</div>
-            <h2>Glossary</h2>
-          </div>
-          <div className="intro">Key words you need to know. If any of these come up in an exam question, use the exact definition.</div>
-          <table className="def-table">
-            <thead><tr><th>Word</th><th>Simple definition</th></tr></thead>
-            <tbody>
-              {[
-                ["Conservation of energy","Energy cannot be created or destroyed — only transferred or dissipated."],
-                ["Energy store","A place where energy is held — e.g. kinetic, thermal, chemical."],
-                ["Energy pathway","The route by which energy is transferred — mechanical, electrical, heating, or radiation."],
-                ["Work done","The energy transferred when a force moves an object. W = F × d."],
-                ["Power","The rate of energy transfer. How quickly energy is used or transferred. Measured in Watts."],
-                ["Watt","The unit of power. 1 W = 1 Joule per second."],
-                ["Efficiency","The fraction of input energy that is usefully transferred. Can never exceed 100%."],
-                ["Dissipation","When energy spreads out into the surroundings as thermal energy, becoming too spread out to use."],
-                ["Non-renewable","An energy source that will eventually run out — fossil fuels and nuclear."],
-                ["Renewable","An energy source that is naturally replenished and will not run out."],
-                ["Carbon neutral","When the CO₂ released roughly equals the CO₂ absorbed — net CO₂ ≈ 0. Biofuels are carbon neutral."],
-                ["Intermittent","Not always available — solar and wind are intermittent because they depend on weather."],
-                ["National Grid","The UK network of cables and transformers that delivers electricity from power stations to homes."],
-                ["Electromagnetic induction","The process by which moving a wire through a magnetic field causes a current to flow. How generators work."],
-                ["Nuclear fission","Splitting a large nucleus (e.g. uranium) into smaller ones, releasing huge amounts of energy."],
-                ["Nuclear fusion","Joining two small nuclei (e.g. hydrogen) together. How stars produce energy."],
-                ["Specific heat capacity","The energy needed to raise 1 kg of a substance by 1°C. Water = 4,200 J/kg°C."],
-                ["Elastic limit","The point beyond which a stretched object permanently deforms and won't return to its original shape."],
-                ["kWh","Kilowatt-hour — the unit of energy used on electricity bills. 1 kWh = 3,600,000 J."],
-              ].map(([word,def]) => (
-                <tr key={word}><td>{word}</td><td>{def}</td></tr>
-              ))}
-            </tbody>
-          </table>
-        </section>
-
-      </main>
-      </div>
-    </div>
-  );
+    </NotesLayout>
+  )
 }

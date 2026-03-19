@@ -32,7 +32,7 @@ const subjects = [
     name: 'Physics',
     colour: '#d4522a',
     topics: [
-      {slug: 'energy', title: 'Energy Start',
+      {slug: 'energy', title: 'Energy Y9 1',
         resources: { notes: true, quiz: false, flashcards: false}
       }
     ],
