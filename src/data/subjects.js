@@ -11,7 +11,7 @@ const subjects = [
     colour: '#c0253d',
     topics: [
       {slug: 'algebra', title: 'Algebra e.g.',
-        resources: { notes: true, quiz: true, flashcards: true }
+        resources: { notes: false, quiz: false, flashcards: false }
       }
     ],
   },
