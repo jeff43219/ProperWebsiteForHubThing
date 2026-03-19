@@ -195,7 +195,7 @@ export default function NotesLayout({ tag, title, subtitle, accent = "#d4522a", 
         style={{
           position: "fixed",
           top: scrolled ? 66 : 70,
-          left: scrolled ? 12 : 16,
+          right: scrolled ? 12 : 16,
           zIndex: 150,
           alignItems: "center",
           gap: 6,
