@@ -262,4 +262,3 @@ export default function NotesLayout({ tag, title, subtitle, accent = "#d4522a", 
       </div>
     </div>
   );
-}
