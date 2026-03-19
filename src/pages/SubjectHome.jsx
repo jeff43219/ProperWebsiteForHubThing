@@ -16,6 +16,9 @@ export default function SubjectHome() {
           GCSE {subject.name}
         </p>
         <h1 className="text-4xl font-extrabold tracking-tight text-[#f0f0f0]">{subject.name}</h1>
+        {subject.topics.length > 0 && (
+          <p className="text-sm text-[#888] mt-2">{subject.topics.length} {subject.topics.length === 1 ? 'topic' : 'topics'}</p>
+        )}
       </div>
 
       {subject.topics.length === 0 ? (
