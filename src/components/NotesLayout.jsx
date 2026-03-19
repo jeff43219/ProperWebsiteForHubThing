@@ -124,8 +124,9 @@ const buildCss = (accent) => `
   .notes-wrap .def-table td:first-child{font-weight:600;white-space:nowrap;color:var(--accent);width:200px}
   .notes-wrap .reveal{opacity:0;transform:translateY(20px);transition:opacity .55s ease,transform .55s ease}
   .notes-wrap .reveal.visible{opacity:1;transform:none}
+  .notes-wrap .mobile-hamburger{display:none}
   @media(max-width:768px){
-    .notes-wrap .notes-sidebar{position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:200;background:rgba(0,0,0,0);transition:transform .25s ease,background .25s ease;transform:translateX(-100%);display:flex;flex-direction:column;justify-content:center}
+    .notes-wrap .notes-sidebar{position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:200;background:rgba(0,0,0,0);transition:transform .25s ease,background .25s ease;transform:translateX(-100%)}
     .notes-wrap .notes-sidebar.mobile-open{transform:translateX(0);background:rgba(0,0,0,0.85)}
     .notes-wrap .notes-sidebar .sidebar-inner{background:#111;width:80%;max-width:300px;height:100%;padding:80px 0 40px;overflow-y:auto}
     .notes-wrap .notes-sidebar.mobile-open .sidebar-inner{box-shadow:4px 0 32px rgba(0,0,0,0.5)}
@@ -144,10 +145,12 @@ const buildCss = (accent) => `
 export default function NotesLayout({ tag, title, subtitle, accent = "#d4522a", topics = [], reference = [], children }) {
   const [activeId, setActiveId] = useState("");
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const allNav = [...topics, ...reference];
 
   useEffect(() => {
     const onScroll = () => {
+      setScrolled(window.scrollY > 80);
       let cur = "";
       allNav.forEach(({ id }) => {
         const el = document.getElementById(id);
@@ -170,13 +173,7 @@ export default function NotesLayout({ tag, title, subtitle, accent = "#d4522a", 
     return () => obs.disconnect();
   }, []);
 
-  const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 80);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  const scrollTo = (id) => {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
     setMobileOpen(false);
   };
@@ -191,11 +188,40 @@ export default function NotesLayout({ tag, title, subtitle, accent = "#d4522a", 
     <div className="notes-wrap" style={{ fontFamily: "'Inter', sans-serif", color: "#f0f0f0" }}>
       <style>{buildCss(accent)}</style>
 
+      {/* Mobile hamburger — fixed, always visible on mobile, shrinks on scroll */}
+      <button
+        onClick={() => setMobileOpen(true)}
+        className="mobile-hamburger"
+        style={{
+          position: "fixed",
+          top: scrolled ? 66 : 70,
+          left: scrolled ? 12 : 16,
+          zIndex: 150,
+          alignItems: "center",
+          gap: 6,
+          background: "#1a1a1a",
+          border: "1px solid #2a2a2a",
+          borderRadius: scrolled ? 8 : 10,
+          color: "#ccc",
+          cursor: "pointer",
+          padding: scrolled ? "6px 10px" : "9px 14px",
+          fontSize: scrolled ? ".72rem" : ".8rem",
+          fontWeight: 600,
+          transition: "all .2s ease",
+          boxShadow: "0 2px 12px rgba(0,0,0,0.4)",
+        }}
+      >
+        <svg width={scrolled ? 14 : 18} height={scrolled ? 14 : 18} viewBox="0 0 18 18" fill="none" style={{ transition: "all .2s ease", flexShrink: 0 }}>
+          <path d="M2 4.5h14M2 9h14M2 13.5h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+        </svg>
+        Topics
+      </button>
+
       <div className="notes-layout">
-        {/* Sidebar — desktop sticky, mobile full-screen overlay */}
+        {/* Sidebar */}
         <aside
           className={`notes-sidebar${mobileOpen ? " mobile-open" : ""}`}
-          onClick={e => { if (e.target === e.currentTarget) setMobileOpen(false) }}
+          onClick={e => { if (e.target === e.currentTarget) setMobileOpen(false); }}
         >
           <div className="sidebar-inner">
             {topics.length > 0 && (
@@ -215,50 +241,13 @@ export default function NotesLayout({ tag, title, subtitle, accent = "#d4522a", 
 
         {/* Main content */}
         <main className="notes-main">
-          {/* Mobile hamburger — fixed, always visible, shrinks on scroll */}
-          <button
-            onClick={() => setMobileOpen(true)}
-            className="mobile-hamburger"
-            style={{
-              display: "none",
-              position: "fixed",
-              top: scrolled ? 66 : 70,
-              left: scrolled ? 12 : 16,
-              zIndex: 150,
-              alignItems: "center",
-              gap: 6,
-              background: "#1a1a1a",
-              border: "1px solid #2a2a2a",
-              borderRadius: scrolled ? 8 : 10,
-              color: "#ccc",
-              cursor: "pointer",
-              padding: scrolled ? "6px 10px" : "9px 14px",
-              fontSize: scrolled ? ".72rem" : ".8rem",
-              fontWeight: 600,
-              transition: "all .2s ease",
-              boxShadow: "0 2px 12px rgba(0,0,0,0.4)",
-            }}
-          >
-            <svg
-              width={scrolled ? 14 : 18}
-              height={scrolled ? 14 : 18}
-              viewBox="0 0 18 18"
-              fill="none"
-              style={{ transition: "all .2s ease", flexShrink: 0 }}
-            >
-              <path d="M2 4.5h14M2 9h14M2 13.5h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-            </svg>
-            Topics
-          </button>
-
-          {/* Hero */}
           {tag && <div className="hero-tag">{tag}</div>}
           {title && <h1 className="hero-title">{title}</h1>}
           {subtitle && <p className="hero-sub">{subtitle}</p>}
           {(tag || title || subtitle) && <div className="hero-bar" />}
-
           {children}
         </main>
       </div>
     </div>
   );
+}
