@@ -1,14 +1,38 @@
 const subjects = [
-    {
+  {
     slug: 'biology',
     name: 'Biology',
     colour: '#2d9e7f',
     topics: [],
   },
   {
+    slug: 'chemistry',
+    name: 'Chemistry',
+    colour: '#6c4fd4',
+    topics: [],
+  },
+  {
+    slug: 'computer-science',
+    name: 'Computer Science',
+    colour: '#d4748a',
+    topics: [],
+  },
+  {
     slug: 'english',
     name: 'English',
     colour: '#a3b832',
+    topics: [],
+  },
+  {
+    slug: 'geography',
+    name: 'Geography',
+    colour: '#c49a1a',
+    topics: [],
+  },
+  {
+    slug: 'it',
+    name: 'IT',
+    colour: '#b8bec7',
     topics: [],
   },
   {
@@ -22,12 +46,6 @@ const subjects = [
     ],
   },
   {
-    slug: 'chemistry',
-    name: 'Chemistry',
-    colour: '#6c4fd4',
-    topics: [],
-  },
-  {
     slug: 'physics',
     name: 'Physics',
     colour: '#d4522a',
@@ -36,24 +54,6 @@ const subjects = [
         resources: { notes: true, quiz: false, flashcards: false}
       }
     ],
-  },
-  {
-    slug: 'geography',
-    name: 'Geography',
-    colour: '#c49a1a',
-    topics: [],
-  },
-  {
-    slug: 'computer-science',
-    name: 'Computer Science',
-    colour: '#d4748a',
-    topics: [],
-  },
-  {
-    slug: 'it',
-    name: 'IT',
-    colour: '#b8bec7',
-    topics: [],
   },
 ]
 
