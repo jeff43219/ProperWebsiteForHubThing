@@ -1,5 +1,12 @@
 export default {
   content: ['./index.html', './src/**/*.{js,jsx}'],
-  theme: { extend: {} },
+  theme: {
+    extend: {
+      fontFamily: {
+        sans: ['Inter', 'sans-serif'],
+        outfit: ['Outfit', 'sans-serif'],
+      },
+    },
+  },
   plugins: [],
 }
