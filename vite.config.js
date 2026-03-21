@@ -7,8 +7,10 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      // This maps "@" to the "src" folder
       '@': path.resolve(__dirname, './src'),
     },
+  },
+  server: {
+    allowedHosts: ['realtor-cup-campaign-democracy.trycloudflare.com'],
   },
 })
