@@ -20,7 +20,7 @@ export default function Notes() {
       tag="GCSE Maths · Higher Tier"
       title="Surface Area of 3D Shapes"
       subtitle="Nets, curved surfaces, compound solids, and every formula — with 2026 exam-aid status clearly marked for every shape."
-      accent="#2563eb"
+      accent="#c0253d"
       topics={TOPICS}
       reference={REFERENCE}
     >
