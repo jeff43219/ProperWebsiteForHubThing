@@ -44,9 +44,9 @@ const subjects = [
     name: 'Maths',
     colour: '#c0253d',
     topics: [
-      {slug: 'algebra', title: 'Algebra e.g.',
-        resources: { notes: false, quiz: false, flashcards: false }
-      },
+      //{slug: 'algebra', title: 'Algebra e.g.',
+        //resources: { notes: false, quiz: false, flashcards: false }
+      //},
       {slug: '3d-shapes-surface-area', title: '3D Shapes — Surface Area',
         resources: { notes: true, quiz: false, flashcards: false }
       }
