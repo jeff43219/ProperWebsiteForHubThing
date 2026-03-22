@@ -27,13 +27,14 @@ const subjects = [
     slug: 'geography',
     name: 'Geography',
     colour: '#c49a1a',
-    topics: [
+    topics: [      
+      {slug: 'desert-biome', title: 'Desert Biomes Y8',
+        resources: { notes: true, quiz: false, flashcards: false}
+      },
       {slug: 'tropical-rainforest', title: 'Tropical Rainforests Y8',
         resources: { notes: true, quiz: false, flashcards: false}
       },
-      {slug: 'desert-biome', title: 'Desert Biomes Y8',
-        resources: { notes: true, quiz: false, flashcards: false}
-      }
+
     ],
   },
   {
