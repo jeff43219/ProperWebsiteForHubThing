@@ -27,7 +27,11 @@ const subjects = [
     slug: 'geography',
     name: 'Geography',
     colour: '#c49a1a',
-    topics: [],
+    topics: [
+      {slug: 'tropical-rainforest', title: 'Tropical Rainforests Y8',
+        resources: { notes: true, quiz: false, flashcards: false}
+      }
+    ],
   },
   {
     slug: 'it',

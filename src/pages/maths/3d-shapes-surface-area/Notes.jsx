@@ -26,7 +26,7 @@ export default function Notes() {
     >
 
       {/* 01 CYLINDERS */}
-      <section className="section reveal" id="cylinders">
+      <section className="section reveal scroll-mt-32" id="cylinders">
         <div className="section-header">
           <div className="section-num">01</div>
           <h2>Cylinders</h2>
@@ -76,7 +76,7 @@ export default function Notes() {
       <div className="divider" />
 
       {/* 02 SPHERES & HEMISPHERES */}
-      <section className="section reveal" id="spheres">
+      <section className="section reveal scroll-mt-32" id="spheres">
         <div className="section-header">
           <div className="section-num">02</div>
           <h2>Spheres &amp; Hemispheres</h2>
@@ -127,7 +127,7 @@ export default function Notes() {
       <div className="divider" />
 
       {/* 03 CONES */}
-      <section className="section reveal" id="cones">
+      <section className="section reveal scroll-mt-32" id="cones">
         <div className="section-header">
           <div className="section-num">03</div>
           <h2>Cones</h2>
@@ -184,7 +184,7 @@ export default function Notes() {
       <div className="divider" />
 
       {/* 04 PYRAMIDS */}
-      <section className="section reveal" id="pyramids">
+      <section className="section reveal scroll-mt-32" id="pyramids">
         <div className="section-header">
           <div className="section-num">04</div>
           <h2>Pyramids (Square-Based)</h2>
@@ -239,7 +239,7 @@ export default function Notes() {
       <div className="divider" />
 
       {/* 05 COMPOUND SHAPES */}
-      <section className="section reveal" id="compound">
+      <section className="section reveal scroll-mt-32" id="compound">
         <div className="section-header">
           <div className="section-num">05</div>
           <h2>Compound Shapes</h2>
@@ -323,7 +323,7 @@ export default function Notes() {
       <div className="divider" />
 
       {/* 06 FORMULAS */}
-      <section className="section reveal" id="formulas">
+      <section className="section reveal scroll-mt-32" id="formulas">
         <div className="section-header">
           <div className="section-num">06</div>
           <h2>Formula Reference</h2>
@@ -365,7 +365,7 @@ export default function Notes() {
       <div className="divider" />
 
       {/* 07 MISTAKES */}
-      <section className="section reveal" id="mistakes">
+      <section className="section reveal scroll-mt-32" id="mistakes">
         <div className="section-header">
           <div className="section-num">07</div>
           <h2>Common Exam Mistakes</h2>
@@ -389,7 +389,7 @@ export default function Notes() {
       <div className="divider" />
 
       {/* 08 GLOSSARY */}
-      <section className="section reveal" id="glossary">
+      <section className="section reveal scroll-mt-32" id="glossary">
         <div className="section-header">
           <div className="section-num">08</div>
           <h2>Glossary</h2>
