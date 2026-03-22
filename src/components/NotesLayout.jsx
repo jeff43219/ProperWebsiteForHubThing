@@ -122,7 +122,7 @@ const buildCss = (accent) => `
   .notes-wrap .def-table tbody tr:hover{background:var(--accent-light)}
   .notes-wrap .def-table td{padding:10px 16px;line-height:1.55;color:var(--text);vertical-align:top}
   .notes-wrap .def-table td:first-child{font-weight:600;white-space:nowrap;color:var(--accent);width:200px}
-  .notes-wrap .reveal{opacity:0;transform:translateY(20px);transition:opacity .55s ease,transform .55s ease}
+  .notes-wrap .reveal{opacity:0;transform:translateY(20px);transition:opacity .3s ease,transform .3s ease}
   .notes-wrap .reveal.visible{opacity:1;transform:none}
   .notes-wrap .mobile-hamburger{display:none}
   @media(max-width:768px){

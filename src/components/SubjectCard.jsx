@@ -31,7 +31,7 @@ export default function SubjectCard({ name, slug, colour }) {
         }}
       >
         <div
-          className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+          className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
           style={{ background: `radial-gradient(circle at 30% 50%, ${colour}15 0%, transparent 70%)` }}
         />
         

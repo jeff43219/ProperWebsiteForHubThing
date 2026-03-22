@@ -27,7 +27,7 @@ export default function Navbar() {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 flex items-center px-8 h-16 gap-4 border-b border-white/5 bg-[#0f0f0f]/80 backdrop-blur-xl">
       <div 
-        className="absolute bottom-[-1px] left-0 right-0 h-[1px] opacity-40 transition-colors duration-500"
+        className="absolute bottom-[-1px] left-0 right-0 h-[1px] opacity-40 transition-colors duration-200"
         style={{ 
           background: `linear-gradient(90deg, transparent, ${accentColor}, transparent)`,
           boxShadow: `0 0 15px 1px ${accentColor}44`

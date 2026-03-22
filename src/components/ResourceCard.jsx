@@ -38,7 +38,7 @@ export default function ResourceCard({ slug, subjectSlug, topicSlug, available, 
       )}
       
       <div className="flex items-center justify-between mb-2">
-        <span className="text-3xl grayscale-[0.5] group-hover:grayscale-0 transition-all duration-500">{icon}</span>
+        <span className="text-3xl grayscale-[0.5] group-hover:grayscale-0 transition-all duration-300">{icon}</span>
         {available && (
           <span className="text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-md bg-white/5 border border-white/10 text-white/50 group-hover:text-white transition-colors">
             Ready

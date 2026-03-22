@@ -11,7 +11,7 @@ const containerVariants = {
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.05
+      staggerChildren: 0.03
     }
   }
 }
@@ -21,7 +21,7 @@ const itemVariants = {
   visible: {
     y: 0,
     opacity: 1,
-    transition: { type: 'spring', stiffness: 300, damping: 24 }
+    transition: { type: 'spring', stiffness: 400, damping: 25 }
   }
 }
 
@@ -102,7 +102,7 @@ export default function SubjectHome() {
                 }}
               >
                 <div
-                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
                   style={{ background: `radial-gradient(circle at 10% 10%, ${subject.colour}10 0%, transparent 80%)` }}
                 />
                 

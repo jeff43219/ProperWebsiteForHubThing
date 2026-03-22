@@ -33,7 +33,7 @@ export default function TopicHome() {
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
+          transition={{ delay: 0.1 }}
           className="grid grid-cols-1 sm:grid-cols-3 gap-6"
         >
           {['notes', 'quiz', 'flashcards'].map(slug => (
