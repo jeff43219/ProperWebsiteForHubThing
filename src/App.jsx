@@ -10,7 +10,7 @@ import ResourcePage from './components/ResourcePage'
 const Layout = ({ children }) => (
   <div className="min-h-screen bg-[#0f0f0f] font-sans selection:bg-white/10 selection:text-white">
     <Navbar />
-    <div className="pt-20 pb-12">
+    <div className="pt-20 pb-6">
       {children}
     </div>
   </div>
