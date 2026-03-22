@@ -17,7 +17,7 @@ const buildCss = (accent) => `
   .notes-wrap .hero-title{font-size:clamp(1.8rem,4vw,2.8rem);font-weight:800;color:#fff;letter-spacing:-.04em;line-height:1.1;margin-bottom:12px}
   .notes-wrap .hero-sub{color:rgba(255,255,255,.5);font-size:.95rem;max-width:480px;line-height:1.7}
   .notes-wrap .hero-bar{height:3px;background:linear-gradient(90deg,${accent},#f5a623,#2E9E6B);margin:32px 0 48px;border-radius:2px}
-  .notes-wrap .section{margin-bottom:64px}
+  .notes-wrap .section{margin-bottom:64px;scroll-margin-top:8rem}
   .notes-wrap .section-header{display:flex;align-items:center;gap:14px;margin-bottom:22px;padding-bottom:14px;border-bottom:2px solid var(--border)}
   .notes-wrap .section-num{background:#111;color:var(--accent);font-size:.75rem;font-weight:700;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:monospace}
   .notes-wrap .section-header h2{font-size:1.3rem;font-weight:700;color:var(--text);letter-spacing:-.03em}

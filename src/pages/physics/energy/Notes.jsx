@@ -27,7 +27,7 @@ export default function Notes() {
     >
 
       {/* 01 ENERGY STORES */}
-      <section className="section reveal scroll-mt-32" id="stores">
+      <section className="section reveal" id="stores">
         <div className="section-header">
           <div className="section-num">01</div>
           <h2>Energy Stores</h2>
@@ -60,7 +60,7 @@ export default function Notes() {
       <div className="divider" />
 
       {/* 02 TRANSFERS */}
-      <section className="section reveal scroll-mt-32" id="transfers">
+      <section className="section reveal" id="transfers">
         <div className="section-header">
           <div className="section-num">02</div>
           <h2>Transfers &amp; Pathways</h2>
@@ -112,7 +112,7 @@ export default function Notes() {
       <div className="divider" />
 
       {/* 03 CALCULATIONS */}
-      <section className="section reveal scroll-mt-32" id="calculations">
+      <section className="section reveal" id="calculations">
         <div className="section-header">
           <div className="section-num">03</div>
           <h2>Calculations</h2>
@@ -194,7 +194,7 @@ export default function Notes() {
       <div className="divider" />
 
       {/* 04 RESOURCES */}
-      <section className="section reveal scroll-mt-32" id="resources">
+      <section className="section reveal" id="resources">
         <div className="section-header">
           <div className="section-num">04</div>
           <h2>Energy Resources</h2>
@@ -285,7 +285,7 @@ export default function Notes() {
       <div className="divider" />
 
       {/* 05 EFFICIENCY */}
-      <section className="section reveal scroll-mt-32" id="efficiency">
+      <section className="section reveal" id="efficiency">
         <div className="section-header">
           <div className="section-num">05</div>
           <h2>Efficiency &amp; Dissipation</h2>
@@ -320,7 +320,7 @@ export default function Notes() {
       <div className="divider" />
 
       {/* 06 GENERATION */}
-      <section className="section reveal scroll-mt-32" id="generation">
+      <section className="section reveal" id="generation">
         <div className="section-header">
           <div className="section-num">06</div>
           <h2>Electricity Generation</h2>
@@ -382,7 +382,7 @@ export default function Notes() {
       <div className="divider" />
 
       {/* 07 FORMULAS */}
-      <section className="section reveal scroll-mt-32" id="formulas">
+      <section className="section reveal" id="formulas">
         <div className="section-header">
           <div className="section-num">07</div>
           <h2>Key Formulas</h2>
@@ -410,7 +410,7 @@ export default function Notes() {
       <div className="divider" />
 
       {/* 08 MISTAKES */}
-      <section className="section reveal scroll-mt-32" id="mistakes">
+      <section className="section reveal" id="mistakes">
         <div className="section-header">
           <div className="section-num">08</div>
           <h2>Common Exam Mistakes</h2>
@@ -435,7 +435,7 @@ export default function Notes() {
       <div className="divider" />
 
       {/* 09 GLOSSARY */}
-      <section className="section reveal scroll-mt-32" id="glossary">
+      <section className="section reveal" id="glossary">
         <div className="section-header">
           <div className="section-num">09</div>
           <h2>Glossary</h2>

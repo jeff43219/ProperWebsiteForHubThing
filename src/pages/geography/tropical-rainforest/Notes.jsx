@@ -32,7 +32,7 @@ export default function Notes() {
       reference={REFERENCE}
     >
       {/* 01 BIOMES */}
-      <section className="section reveal scroll-mt-32" id="biomes">
+      <section className="section reveal" id="biomes">
         <div className="section-header">
           <div className="section-num">01</div>
           <h2>Biomes & Location</h2>
@@ -48,7 +48,7 @@ export default function Notes() {
       <div className="divider" />
 
       {/* 02 LAYERS & ADAPTATIONS */}
-      <section className="section reveal scroll-mt-32" id="layers">
+      <section className="section reveal" id="layers">
         <div className="section-header">
           <div className="section-num">02</div>
           <h2>Layers & Adaptations</h2>
@@ -128,7 +128,7 @@ export default function Notes() {
       <div className="divider" />
 
       {/* 03 NUTRIENT & WATER CYCLES */}
-      <section className="section reveal scroll-mt-32" id="cycle">
+      <section className="section reveal" id="cycle">
         <div className="section-header">
           <div className="section-num">03</div>
           <h2>Nutrient & Water Cycles</h2>
@@ -202,7 +202,7 @@ export default function Notes() {
       <div className="divider" />
 
       {/* 04 DEFORESTATION (PALM OIL) */}
-      <section className="section reveal scroll-mt-32" id="deforestation">
+      <section className="section reveal" id="deforestation">
         <div className="section-header">
           <div className="section-num">04</div>
           <h2>The Palm Oil Debate</h2>
@@ -255,7 +255,7 @@ export default function Notes() {
       <div className="divider" />
 
       {/* 05 BELO MONTE DAM */}
-      <section className="section reveal scroll-mt-32" id="casestudy">
+      <section className="section reveal" id="casestudy">
         <div className="section-header">
           <div className="section-num">05</div>
           <h2>Case Study: Belo Monte Dam</h2>
@@ -289,7 +289,7 @@ export default function Notes() {
       <div className="divider" />
 
       {/* 06 SUSTAINABILITY */}
-      <section className="section reveal scroll-mt-32" id="sustainability">
+      <section className="section reveal" id="sustainability">
         <div className="section-header">
           <div className="section-num">06</div>
           <h2>Sustainability</h2>
@@ -346,7 +346,7 @@ export default function Notes() {
       <div className="divider" />
 
       {/* 07 KEY TERMS */}
-      <section className="section reveal scroll-mt-32" id="terms">
+      <section className="section reveal" id="terms">
         <div className="section-header">
           <div className="section-num">07</div>
           <h2>Key Terms</h2>
@@ -380,7 +380,7 @@ export default function Notes() {
       <div className="divider" />
 
       {/* 08 EXAM TIPS */}
-      <section className="section reveal scroll-mt-32" id="exam">
+      <section className="section reveal" id="exam">
         <div className="section-header">
           <div className="section-num">08</div>
           <h2>Exam Tips</h2>
