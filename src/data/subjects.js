@@ -3,7 +3,11 @@ const subjects = [
     slug: 'biology',
     name: 'Biology',
     colour: '#2d9e7f',
-    topics: [],
+    topics: [
+      {slug: 'cells-and-stuff', title: 'Cells & Transport',
+        resources: { notes: true, quiz: false, flashcards: false}
+      }
+    ],
   },
   {
     slug: 'chemistry',
